@@ -37,6 +37,18 @@ chk "member cannot rename"         403 "$(code bjorn -X PATCH -d '{"name":"x"}' 
 chk "admin renames"                200 "$(code anna -X PATCH -d '{"name":"Fjölskyldan"}' $B/api/household)"
 chk "the last admin cannot leave"  409 "$(code anna -X DELETE $B/api/household/members/dev-anna@x.test)"
 chk "member cannot remove another" 403 "$(code bjorn -X DELETE $B/api/household/members/dev-anna@x.test)"
+# Somebody who opened the calendar first has a household of their own when the invite arrives.
+signin cara Cara; signin dag Dag
+chk "Cara has her own, empty"      1 "$(code cara $B/api/me >/dev/null; jq1 'len(d["households"])')"
+code anna -X POST $B/api/household/invites >/dev/null; T2=$(jq1 'd["token"]')
+curl -s -o /dev/null -H "$(ck cara)" $B/join/$T2
+chk "her empty one goes when she joins" 1 "$(code cara $B/api/me >/dev/null; jq1 'len(d["households"])')"
+chk "  and she sees Anna's"        member "$(jq1 'd["households"][0]["role"]')"
+code dag $B/api/me >/dev/null
+chk "Dag puts somebody in his own" 201 "$(code dag -d '{"name":"Embla"}' $B/api/people)"
+code anna -X POST $B/api/household/invites >/dev/null; T3=$(jq1 'd["token"]')
+curl -s -o /dev/null -H "$(ck dag)" $B/join/$T3
+chk "a household with anything in it stays" 2 "$(code dag $B/api/me >/dev/null; jq1 'len(d["households"])')"
 
 echo "--- schedules"
 A=dev-anna@x.test; Bj=dev-bjorn@x.test
