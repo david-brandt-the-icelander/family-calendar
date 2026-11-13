@@ -5,29 +5,6 @@
   "folder": ".",
   "entities": [
     {
-      "id": "go-live",
-      "title": "Put the calendar live",
-      "type": "feature",
-      "status": "accepted",
-      "summary": "Register the app in the login service, create the D1 and apply migrations, deploy.",
-      "origin": {
-        "kind": "conversation",
-        "by": "The owner",
-        "date": "2026-11-13"
-      },
-      "acceptanceCriteria": [
-        "Signing in at icelander.net/calendar with Google lands in a household",
-        "The login service's APPS has the calendar entry"
-      ],
-      "links": [
-        {
-          "path": "README.md",
-          "label": "Setup"
-        }
-      ],
-      "evidenceStatus": "proposed"
-    },
-    {
       "id": "events",
       "title": "One-off events",
       "type": "feature",

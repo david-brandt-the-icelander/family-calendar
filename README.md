@@ -22,24 +22,21 @@ the vendored client library and a service binding, and never sees a password or 
 
 A member edits their own schedules and those of dependants; an admin edits anyone's.
 
-## Setup (the owner does this; nothing here is run for you)
+## Deploying
 
-1. **Register the app with the login service** (a change in the `icelander.net` repository: the `calendar` entry
-   of `APPS` in `accounts/wrangler.jsonc`, then deploy `accounts`).
-2. **Create the database** and put its id in `wrangler.jsonc`:
+Live since 2026-11-13. The app is registered with the login service (the `calendar` entry of `APPS` in the
+`icelander.net` repository's `accounts/wrangler.jsonc`), and its database `family-calendar` exists. Nothing
+deploys on merge; from the repository root:
 
-   ```bash
-   npx wrangler d1 create family-calendar
-   npx wrangler d1 migrations apply family-calendar --remote
-   ```
+```bash
+npx wrangler d1 migrations apply family-calendar --remote
+```
 
-3. **Deploy:**
+```bash
+npx wrangler deploy
+```
 
-   ```bash
-   npx wrangler deploy
-   ```
-
-The route `icelander.net/calendar*` needs nothing in DNS. Google needs nothing new: its redirect URI is the
+The route `icelander.net/calendar*` needs nothing in DNS, and Google nothing new: its redirect URI is the
 login service's own.
 
 ## Tests
