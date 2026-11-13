@@ -13,6 +13,10 @@ Run the tests with `scripts/ci-test.sh` (unit tests, the vendored-library check,
 - **Light mode only, and no hidden information.** Everyone in a household sees everything in it. There is no "private" or "busy only" schedule, by the owner's decision.
 - **`wrangler dev` needs `--local-upstream localhost:<port>`**: the route names icelander.net, and without it `request.url` does too, which makes the library refuse its stand-in sign-in.
 
+## Design
+
+The approved look of the client, and the calendar import, are in `design/README.md`, with a picture of every screen in `design/screens/`. Build `public/` to it; the `.dc.html` files under `design/source/` are mockups for reference, not code to copy, and nothing in `design/` is served.
+
 ## Architecture diagrams and knowledge files
 
 Each folder documents itself in a `.dev/` directory next to its code, as JSON following the skills in `Meta/Agents/Skills/` and the knowledge catalogue in `Meta/Agents/Knowledge/` (human-assisted software development). Read a folder's `.dev` files before changing it. Diagrams: a component diagram for a cohesive folder, a deployment diagram for what deploys on its own (the repository root). Intent, constraints, decisions, backlog, configuration and the rest are knowledge files written with `describe-knowledge`. Wanted work is a `backlog` item, and a question only the owner can answer is a `decisions` record with `status: open`. Every actor a diagram names has a file in `Actors/`. Update the `.dev` files in the same commit as the code they describe, and before finishing run, from the repository root with the `jsonschema` package installed:

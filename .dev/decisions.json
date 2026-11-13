@@ -110,6 +110,23 @@
         "date": "2026-11-13"
       },
       "evidenceStatus": "proposed"
+    },
+    {
+      "id": "import-not-subscribe",
+      "title": "Other calendars come in by importing a file",
+      "summary": "Import is a one-time copy of an .ics or .zip file on the desktop; no subscribing to calendar links.",
+      "status": "accepted",
+      "context": "Families keep schedules in Google, Outlook and Apple calendars, which all export .ics.",
+      "decision": "An import screen reads exported files; the calendar never polls another system.",
+      "rationale": "The owner asked for importing files and declined subscriptions.",
+      "decidedBy": "The owner",
+      "decidedOn": "2026-11-13",
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "documented"
     }
   ]
 }
