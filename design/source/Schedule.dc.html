@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="is">
+<head>
+<meta charset="utf-8">
+<title>Stundaskrá — Vinna, Anna</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F3EF}
+a{color:#2251CC}a:hover{color:#173A96}
+button,input,select{font:inherit;color:#1C1E24}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="min-height: 1040px; background: #F4F3EF; color: #1C1E24; font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.4">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px 48px; box-sizing: border-box">
+
+<header style="display: flex; align-items: center; gap: 24px; padding: 18px 0; flex-wrap: wrap; border-bottom: 1px solid #E3E1DA">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="1" y="1" width="12" height="12" rx="3" fill="#2F6FED"></rect><rect x="15" y="1" width="12" height="12" rx="3" fill="#D9711C"></rect><rect x="1" y="15" width="12" height="12" rx="3" fill="#1F8A4C"></rect><rect x="15" y="15" width="12" height="12" rx="3" fill="#8E4FE0"></rect></svg>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: -0.01em">Dagatal</span>
+<span style="color: #5F6470; font-size: 14px">· Snekkjó</span>
+</div>
+<nav aria-label="Aðalvalmynd" style="display: flex; gap: 4px; flex: 1">
+<a href="Main.dc.html" style="padding: 10px 14px; border-radius: 10px; color: #1C1E24; text-decoration: none; font-weight: 500">Vika</a>
+<a href="#" aria-current="page" style="padding: 10px 14px; border-radius: 10px; background: #1C1E24; color: #FFFFFF; text-decoration: none; font-weight: 500">Stundaskrár</a>
+<a href="Household.dc.html" style="padding: 10px 14px; border-radius: 10px; color: #1C1E24; text-decoration: none; font-weight: 500">Heimilið</a>
+</nav>
+<button type="button" aria-label="Davíð — reikningur og útskráning" style="width: 40px; height: 40px; border-radius: 999px; border: 0; background: #2F6FED; color: #FFFFFF; font-weight: 600">D</button>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; gap: 28px; padding-top: 28px; align-items: flex-start">
+
+<aside aria-label="Stundaskrár eftir fólki" style="flex: 1 1 260px; max-width: 300px; display: flex; flex-direction: column; gap: 18px">
+<a href="#" style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 12px; background: #2251CC; color: #FFFFFF; text-decoration: none; font-weight: 600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Ný stundaskrá</a>
+<a href="Import.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; margin-top: -8px; border-radius: 12px; border: 1px solid #E3E1DA; background: #FFFFFF; color: #1C1E24; text-decoration: none; font-weight: 600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"></path><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"></path></svg>Flytja inn úr öðru dagatali</a>
+<sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+<div>
+<div style="display: flex; align-items: center; gap: 8px; padding: 0 4px 6px; font-size: 13px; font-weight: 600; color: #5F6470"><span style="{{ g.dot }}"></span>{{ g.name }}</div>
+<sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+<a href="#" style="{{ it.style }}"><span style="font-weight: 600">{{ it.t }}</span><span style="font-size: 13px; color: #5F6470">{{ it.sum }}</span></a>
+</sc-for>
+</div>
+</sc-for>
+</aside>
+
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+<span style="width: 14px; height: 14px; border-radius: 999px; background: #D9711C"></span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 34px; letter-spacing: -0.02em; flex: 1">Vinna <span style="color: #5F6470; font-weight: 500">· Anna</span></h1>
+<button type="button" style="min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #E3E1DA; background: #FFFFFF; color: #A32A1F; font-weight: 600">Eyða</button>
+<button type="button" style="min-height: 44px; padding: 0 20px; border-radius: 12px; border: 0; background: #2251CC; color: #FFFFFF; font-weight: 600">Vista</button>
+</div>
+
+<section style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 16px; padding: 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A4E57">Heiti<input value="Vinna" style="min-height: 44px; padding: 0 12px; border: 1px solid #D6D3CA; border-radius: 10px; background: #FFFFFF; font-size: 15px; font-weight: 400"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A4E57">Hver<select style="min-height: 44px; padding: 0 12px; border: 1px solid #D6D3CA; border-radius: 10px; background: #FFFFFF; font-size: 15px; font-weight: 400"><option>Anna</option><option>Davíð</option><option>Óli</option><option>Sóley</option></select></label>
+<fieldset style="grid-column: 1 / -1; border: 0; margin: 0; padding: 0">
+<legend style="font-size: 13px; font-weight: 600; color: #4A4E57; padding: 0 0 6px">Tegund</legend>
+<div style="display: inline-flex; padding: 4px; gap: 4px; border-radius: 12px; background: #F1EFE9; flex-wrap: wrap">
+<button type="button" aria-pressed="true" style="min-height: 40px; padding: 0 16px; border-radius: 9px; border: 0; background: #FFFFFF; font-weight: 600; box-shadow: 0 1px 2px rgba(28,30,36,0.12)">Vinna</button>
+<button type="button" aria-pressed="false" style="min-height: 40px; padding: 0 16px; border-radius: 9px; border: 0; background: transparent; color: #4A4E57; font-weight: 500">Skóli</button>
+<button type="button" aria-pressed="false" style="min-height: 40px; padding: 0 16px; border-radius: 9px; border: 0; background: transparent; color: #4A4E57; font-weight: 500">Tómstundir</button>
+<button type="button" aria-pressed="false" style="min-height: 40px; padding: 0 16px; border-radius: 9px; border: 0; background: transparent; color: #4A4E57; font-weight: 500">Annað</button>
+</div>
+</fieldset>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A4E57">Gildir frá<input type="date" value="2026-08-17" style="min-height: 44px; padding: 0 12px; border: 1px solid #D6D3CA; border-radius: 10px; background: #FFFFFF; font-size: 15px; font-weight: 400"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A4E57">Gildir til <span style="font-weight: 400; color: #5F6470">(valfrjálst)</span><input type="date" style="min-height: 44px; padding: 0 12px; border: 1px solid #D6D3CA; border-radius: 10px; background: #FFFFFF; font-size: 15px; font-weight: 400"></label>
+</section>
+
+<section style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 16px; padding: 20px">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap">
+<h2 style="margin: 0; font-size: 18px; font-weight: 600">Vikulegt mynstur</h2>
+<span style="font-size: 13px; color: #5F6470">Tímar endurtaka sig í hverri viku, eða á n vikna fresti frá fyrstu viku.</span>
+</div>
+<div style="overflow-x: auto">
+<div style="min-width: 640px">
+<div style="display: grid; grid-template-columns: 170px 110px 110px 160px 150px 44px; gap: 10px; padding: 0 0 6px; font-size: 12px; font-weight: 600; color: #5F6470; text-transform: uppercase; letter-spacing: 0.04em">
+<span>Dagur</span><span>Byrjar</span><span>Endar</span><span>Endurtekur</span><span>Fyrsta vika</span><span></span>
+</div>
+<sc-for list="{{ rules }}" as="r" hint-placeholder-count="4">
+<div style="{{ r.row }}">
+<select aria-label="Dagur" style="min-height: 44px; padding: 0 10px; border: 1px solid #D6D3CA; border-radius: 10px; background: #FFFFFF"><option>{{ r.day }}</option></select>
+<input type="time" aria-label="Byrjar" value="{{ r.s }}" style="min-height: 44px; padding: 0 10px; border: 1px solid #D6D3CA; border-radius: 10px; background: #FFFFFF; font-variant-numeric: tabular-nums">
+<input type="time" aria-label="Endar" value="{{ r.e }}" style="min-height: 44px; padding: 0 10px; border: 1px solid #D6D3CA; border-radius: 10px; background: #FFFFFF; font-variant-numeric: tabular-nums">
+<select aria-label="Endurtekur" style="min-height: 44px; padding: 0 10px; border: 1px solid #D6D3CA; border-radius: 10px; background: #FFFFFF"><option>{{ r.every }}</option></select>
+<sc-if value="{{ r.alt }}" hint-placeholder-val="{{ false }}">
+<input type="date" aria-label="Fyrsta vika" value="2026-10-28" style="min-height: 44px; padding: 0 10px; border: 1px solid #D6D3CA; border-radius: 10px; background: #FFFFFF">
+</sc-if>
+<sc-if value="{{ r.notAlt }}" hint-placeholder-val="{{ true }}">
+<span style="font-size: 13px; color: #5F6470; align-self: center">—</span>
+</sc-if>
+<button type="button" aria-label="Fjarlægja tíma" style="width: 44px; height: 44px; border-radius: 10px; border: 0; background: transparent; color: #5F6470; display: grid; place-items: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-for>
+</div>
+</div>
+<button type="button" style="margin-top: 10px; min-height: 44px; padding: 0 14px; border-radius: 10px; border: 1px dashed #C9C6BD; background: transparent; color: #2251CC; font-weight: 600">+ Bæta við tíma</button>
+
+<div style="margin-top: 18px; padding: 14px 16px; border-radius: 12px; background: #F7F6F2">
+<div style="font-size: 13px; font-weight: 600; color: #4A4E57; margin-bottom: 10px">Næstu vikur — miðvikudagur 09:00–13:00</div>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{ preview }}" as="w" hint-placeholder-count="6">
+<div style="{{ w.style }}"><div style="font-size: 12px; font-weight: 600">{{ w.label }}</div><div style="font-size: 12px">{{ w.state }}</div></div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 16px; padding: 20px">
+<h2 style="margin: 0 0 14px; font-size: 18px; font-weight: 600">Undantekningar</h2>
+<sc-for list="{{ exceptions }}" as="x" hint-placeholder-count="2">
+<div style="display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid #EEECE6; flex-wrap: wrap">
+<span style="width: 120px; font-weight: 600; font-variant-numeric: tabular-nums">{{ x.date }}</span>
+<span style="{{ x.tagStyle }}">{{ x.tag }}</span>
+<span style="flex: 1; color: #4A4E57">{{ x.detail }}</span>
+<button type="button" aria-label="Fjarlægja undantekningu" style="width: 44px; height: 44px; border-radius: 10px; border: 0; background: transparent; color: #5F6470; display: grid; place-items: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-for>
+<div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; padding-top: 14px; border-top: 1px solid #EEECE6">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A4E57">Dagsetning<input type="date" style="min-height: 44px; padding: 0 10px; border: 1px solid #D6D3CA; border-radius: 10px; background: #FFFFFF; font-weight: 400"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A4E57">Hvað gerist<select style="min-height: 44px; padding: 0 10px; border: 1px solid #D6D3CA; border-radius: 10px; background: #FFFFFF; font-weight: 400"><option>Fellur niður</option><option>Færist</option><option>Aukalega</option></select></label>
+<button type="button" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #1C1E24; background: #FFFFFF; font-weight: 600">Bæta við</button>
+</div>
+</section>
+
+</main>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1040}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dot = (c) => `width: 10px; height: 10px; border-radius: 999px; background: ${c}`;
+    const item = (t, sum, sel, c) => ({ t, sum,
+      style: `display: flex; flex-direction: column; gap: 1px; padding: 10px 12px; margin-bottom: 4px; border-radius: 10px; text-decoration: none; color: #1C1E24; ${sel ? `background: #FFFFFF; border: 1px solid #E3E1DA; box-shadow: inset 3px 0 0 ${c}` : 'border: 1px solid transparent'}` });
+    const groups = [
+      { name: 'Davíð', dot: dot('#2F6FED'), items: [item('Vinna', 'Mán–fös · 08:30–16:30', false)] },
+      { name: 'Anna', dot: dot('#D9711C'), items: [item('Vinna', 'Mán–fim · mið aðra hverja viku', true, '#D9711C'), item('Jóga', 'Fös · 17:30–18:30', false)] },
+      { name: 'Óli', dot: dot('#1F8A4C'), items: [item('Skóli', 'Mán–fös', false), item('Fótbolti', 'Þri, fim · 16:00–17:00', false), item('Sund', 'Lau · 10:00–11:00', false)] },
+      { name: 'Sóley', dot: dot('#8E4FE0'), items: [item('Leikskóli', 'Mán–fös · 08:00–16:00', false), item('Píanó', 'Mið · 15:00–15:45', false)] },
+    ];
+    const rules = [
+      ['mánudagur', '09:00', '17:00', 1], ['þriðjudagur', '09:00', '17:00', 1],
+      ['miðvikudagur', '09:00', '13:00', 2], ['fimmtudagur', '09:00', '17:00', 1],
+    ].map(([day, s, e, n]) => ({ day, s, e, every: n === 1 ? 'Í hverri viku' : 'Á 2 vikna fresti', alt: n > 1, notAlt: n === 1,
+      row: `display: grid; grid-template-columns: 170px 110px 110px 160px 150px 44px; gap: 10px; padding: 6px 0; ${n > 1 ? 'background: #FBF5EE; margin: 0 -8px; padding: 6px 8px; border-radius: 12px' : ''}` }));
+    const preview = [['V 46', true, 'í þessari'], ['V 47', false, ''], ['V 48', true, 'færist'], ['V 49', false, ''], ['V 50', true, ''], ['V 51', false, '']]
+      .map(([label, on, note]) => ({ label, state: on ? (note === 'færist' ? '12:00–16:00' : '09:00–13:00') : 'frí',
+        style: `padding: 8px 10px; border-radius: 10px; ${on ? (note === 'færist' ? 'background: #FFF3D6; color: #7A5200; border: 1px solid #F0D68E' : 'background: #FCEEE2; color: #7A3A06; border: 1px solid #F1C9A6') : 'background: #FFFFFF; color: #5F6470; border: 1px dashed #D6D3CA'}` }));
+    const T = { cancel: ['Fellur niður', '#FDE8E6', '#A32A1F'], move: ['Færist', '#FFF3D6', '#7A5200'] };
+    const exceptions = [
+      { date: 'mið 25. nóv', k: 'move', detail: 'Í staðinn 12:00–16:00' },
+      { date: 'fim 24. des', k: 'cancel', detail: 'Aðfangadagur' },
+    ].map((x) => ({ ...x, tag: T[x.k][0], tagStyle: `padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; background: ${T[x.k][1]}; color: ${T[x.k][2]}` }));
+    return { groups, rules, preview, exceptions };
+  }
+}
+</script>
+</body>
+</html>

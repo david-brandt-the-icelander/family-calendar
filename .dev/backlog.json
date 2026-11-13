@@ -55,6 +55,87 @@
         "date": "2026-11-13"
       },
       "evidenceStatus": "proposed"
+    },
+    {
+      "id": "redesign-client",
+      "title": "Client redesign",
+      "type": "feature",
+      "status": "accepted",
+      "summary": "Rebuild public/ to the approved design in design/: people × days week on desktop, one day at a time on a phone, schedule editor with a sidebar, household with colours and invites, invite-aware sign-in.",
+      "acceptanceCriteria": [
+        "Every screen in design/screens/ matches its picture at 1280 px and 390 px width.",
+        "The week shows cancelled, moved, extra and alternate-week occurrences with their tags.",
+        "Every new string exists in Icelandic and English.",
+        "test/ui/ covers the week grid, the phone day view and the language toggle."
+      ],
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
+    },
+    {
+      "id": "occurrence-status",
+      "title": "Occurrences carry their status",
+      "type": "feature",
+      "status": "accepted",
+      "summary": "expand() returns cancelled occurrences too, and every occurrence carries status (normal, cancelled, moved, extra), the exception note and its rule's every_n_weeks.",
+      "acceptanceCriteria": [
+        "test/unit-expand.mjs covers each status.",
+        "Cancelled occurrences keep the rule's times."
+      ],
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
+    },
+    {
+      "id": "person-colours",
+      "title": "A colour for every person",
+      "type": "feature",
+      "status": "accepted",
+      "summary": "members.colour by migration, PATCH /people/:id and a colour on household members, editable by the person, by members for dependants, and by admins for anyone; /people returns colour for all.",
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
+    },
+    {
+      "id": "ics-import",
+      "title": "Import schedules from .ics and .zip files",
+      "type": "feature",
+      "status": "accepted",
+      "summary": "A desktop import screen: parse .ics (and Google's .zip export) in the browser, review what becomes schedules and exceptions, and write it through one atomic endpoint. A one-time copy; subscribing to calendar links was declined. Mapping and limits in design/README.md.",
+      "acceptanceCriteria": [
+        "Weekly and alternate-week series, EXDATE and RECURRENCE-ID overrides import as rules and exceptions.",
+        "One-off, monthly, yearly, all-day and past series are listed but not imported, with a reason.",
+        "An import that fails writes nothing.",
+        "A second household is untouched by an import in itest.sh."
+      ],
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
+    },
+    {
+      "id": "invite-preview",
+      "title": "Invite preview before signing in",
+      "type": "feature",
+      "status": "proposed",
+      "summary": "A public GET of an invite token's household name, inviter's first name and expiry, for the sign-in screen; 404 for anything unknown or expired.",
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
     }
   ]
 }

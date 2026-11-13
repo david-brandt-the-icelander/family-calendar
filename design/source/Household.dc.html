@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="is">
+<head>
+<meta charset="utf-8">
+<title>Heimilið í síma</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2251CC}a:hover{color:#173A96}
+button,input{font:inherit;color:#1C1E24}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F4F3EF; color: #1C1E24; font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.4; display: flex; flex-direction: column; overflow: hidden">
+
+<div style="flex: 1; overflow: hidden; padding: 20px 16px 0; display: flex; flex-direction: column; gap: 14px">
+<div style="padding: 0 4px">
+<div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F6470">Heimilið</div>
+<div style="display: flex; align-items: center; gap: 8px">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 30px; letter-spacing: -0.02em; flex: 1">Snekkjó</h1>
+<button type="button" style="min-height: 40px; padding: 0 12px; border-radius: 10px; border: 1px solid #E3E1DA; background: #FFFFFF; font-size: 13px; font-weight: 600">Breyta nafni</button>
+</div>
+</div>
+
+<section style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 16px; padding: 6px 14px">
+<h2 style="margin: 10px 0 4px; font-size: 13px; font-weight: 600; color: #5F6470">Fólk á heimilinu</h2>
+<sc-for list="{{ people }}" as="p" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #EEECE6">
+<span style="{{ p.avatar }}">{{ p.i }}</span>
+<div style="flex: 1; min-width: 0">
+<div style="font-weight: 600">{{ p.name }}</div>
+<div style="font-size: 13px; color: #5F6470">{{ p.sub }}</div>
+</div>
+<button type="button" aria-label="{{ p.colourLabel }}" style="{{ p.swatch }}"></button>
+</div>
+</sc-for>
+<button type="button" style="width: 100%; margin: 4px 0 10px; min-height: 44px; border-radius: 10px; border: 1px dashed #C9C6BD; background: transparent; color: #2251CC; font-weight: 600; font-size: 14px">+ Barn eða einhver án aðgangs</button>
+</section>
+
+<section style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 16px; padding: 16px 14px">
+<h2 style="margin: 0 0 4px; font-size: 16px; font-weight: 600">Bjóða einhverjum</h2>
+<p style="margin: 0 0 12px; font-size: 13px; color: #5F6470">Hlekkurinn virkar einu sinni, í 7 daga. Sendu hann þeim sem á að bætast við.</p>
+<div style="display: flex; gap: 8px">
+<label style="flex: 1; min-width: 0"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Boðshlekkur</span><input readonly value="icelander.net/calendar/join/k7Qm2…" style="width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 12px; border: 1px solid #D6D3CA; border-radius: 10px; background: #F7F6F2; font-size: 13px; font-family: ui-monospace, 'SF Mono', Menlo, monospace"></label>
+<button type="button" style="flex: none; min-height: 44px; padding: 0 16px; border-radius: 10px; border: 0; background: #2251CC; color: #FFFFFF; font-weight: 600">Afrita</button>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 13px; color: #5F6470">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+<span style="flex: 1">Rennur út 20. nóv · 1 virkt boð</span>
+<button type="button" style="min-height: 36px; padding: 0 8px; border: 0; background: transparent; color: #A32A1F; font-size: 13px; font-weight: 600">Afturkalla</button>
+</div>
+</section>
+
+<button type="button" style="align-self: flex-start; min-height: 44px; padding: 0 4px; border: 0; background: transparent; color: #A32A1F; font-weight: 600; font-size: 14px">Yfirgefa heimilið</button>
+</div>
+
+<nav aria-label="Aðalvalmynd" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #E3E1DA; background: #FFFFFF; padding: 6px 8px 22px">
+<a href="WeekPhone.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 0; text-decoration: none; color: #5F6470; font-size: 12px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"></rect><path d="M3 9h18M8 2v4M16 2v4"></path></svg>Vika</a>
+<a href="Schedule.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 0; text-decoration: none; color: #5F6470; font-size: 12px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>Stundaskrár</a>
+<a href="#" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 0; text-decoration: none; color: #1C1E24; font-size: 12px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"></path></svg>Heimilið</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const people = [
+      ['Davíð', 'Stjórnandi · þú', '#2F6FED'], ['Anna', 'Meðlimur · skráir sig inn', '#D9711C'],
+      ['Óli', 'Án aðgangs · 3 stundaskrár', '#1F8A4C'], ['Sóley', 'Án aðgangs · 2 stundaskrár', '#8E4FE0'],
+    ].map(([name, sub, c]) => ({ name, sub, i: name[0], colourLabel: `Litur ${name} — breyta`,
+      avatar: `flex: none; width: 40px; height: 40px; border-radius: 999px; background: ${c}; color: #FFFFFF; display: grid; place-items: center; font-weight: 600`,
+      swatch: `flex: none; width: 44px; height: 44px; border-radius: 12px; border: 1px solid #E3E1DA; background: radial-gradient(circle, ${c} 0 9px, #FFFFFF 10px)` }));
+    return { people };
+  }
+}
+</script>
+</body>
+</html>
