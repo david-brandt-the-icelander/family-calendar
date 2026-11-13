@@ -1,0 +1,67 @@
+{
+  "$schema": "../Meta/Agents/Knowledge/schemas/plan.schema.json",
+  "kind": "plan",
+  "schemaVersion": 1,
+  "title": "Family calendar plans",
+  "folder": ".",
+  "entities": [
+    {
+      "id": "redesign",
+      "title": "Build the approved design",
+      "summary": "Six pull requests take the client to design/README.md and add calendar import: the look first, then the week, then the other screens.",
+      "goal": "Every screen in design/screens/ works in public/, in both languages, backed by the API changes the design needs.",
+      "status": "planned",
+      "scope": [
+        { "path": ".dev/backlog.json", "entityId": "redesign-client" },
+        { "path": ".dev/backlog.json", "entityId": "occurrence-status" },
+        { "path": ".dev/backlog.json", "entityId": "person-colours" },
+        { "path": ".dev/backlog.json", "entityId": "invite-preview" },
+        { "path": ".dev/backlog.json", "entityId": "ics-import" }
+      ],
+      "approach": "One pull request per step, each with browser tests for what it draws, itest checks that a second household stays untouched by anything new in the API, and its .dev files updated. The shell lands first and splits public/app.js into a module per screen, so the later steps touch different files. The week comes next because it brings person colours and occurrence status, which the household and schedule screens use. After that the schedule editor, the household and the invite screen are independent and can be built in parallel. Import comes last: it opens from the schedule editor and merges into existing schedules. Nothing is deployed unless the owner asks.",
+      "steps": [
+        {
+          "id": "shell",
+          "title": "Look and shell: colour tokens, Bricolage Grotesque and Inter vendored into public/fonts/, the header with household name, IS · EN toggle and account menu, the bottom tab bar below 720 px, existing screens restyled, public/app.js split into one module per screen",
+          "status": "todo"
+        },
+        {
+          "id": "week",
+          "title": "Week: occurrence status from expand(), members.colour migration and colour endpoints, the people × days grid with day bars, tags and legend, and the phone day view",
+          "status": "todo"
+        },
+        {
+          "id": "schedules",
+          "title": "Schedule editor: sidebar grouped by person with summaries, a route per schedule, owner change, the segmented kind control, the repeat select, the six-week preview worked out in the browser, and the exceptions list with removal",
+          "status": "todo"
+        },
+        {
+          "id": "household",
+          "title": "Household: people and dependants in one list with a colour picker, adding dependants here, the invite link with Copy, expiry, open-invite count and Revoke",
+          "status": "todo"
+        },
+        {
+          "id": "invite",
+          "title": "Invite screen: the public invite preview and the signed-out page that shows it when reached through /calendar/join/<token>",
+          "status": "todo"
+        },
+        {
+          "id": "import",
+          "title": "Import: public/ics.js with .zip support, the review screen, and POST /schedules/import writing everything in one batch, with fixtures in test/fixtures/",
+          "status": "todo"
+        }
+      ],
+      "outOfScope": [
+        "One-off events (backlog item events); import lists them as skipped",
+        "Subscribing to calendar links (decision import-not-subscribe)",
+        "Dark mode and hidden or busy-only schedules (decisions light-only and no-hidden-schedules)"
+      ],
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
+    }
+  ]
+}

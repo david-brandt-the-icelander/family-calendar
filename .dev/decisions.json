@@ -127,6 +127,54 @@
         "date": "2026-11-13"
       },
       "evidenceStatus": "documented"
+    },
+    {
+      "id": "removing-people",
+      "title": "How somebody is removed from a household",
+      "summary": "The approved household design has no control for removing a member or a dependant, though the API can do both.",
+      "status": "open",
+      "context": "DELETE /household/members/:id (an admin, or the person leaving) and DELETE /people/:id exist, and the current client offers them. design/source/Household.dc.html shows only Yfirgefa heimilið.",
+      "waitingOn": "The owner",
+      "options": [
+        {
+          "title": "A menu on each person's row",
+          "consequences": "Admins remove members, and members remove dependants, from the row that already holds the colour button; one more control per row."
+        },
+        {
+          "title": "Leave it out",
+          "consequences": "Matches the design; a mistaken dependant or a departed member stays until the database is edited."
+        }
+      ],
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
+    },
+    {
+      "id": "several-households",
+      "title": "Somebody in more than one household",
+      "summary": "The client shows only a person's first household, though the API takes ?household=. The design has no way to switch.",
+      "status": "open",
+      "context": "Since PR 5, following an invite removes your own household only when it holds nothing. Somebody whose own household has a schedule or a dependant keeps it, and it stays first, so they never see the one they joined.",
+      "waitingOn": "The owner",
+      "options": [
+        {
+          "title": "A household switcher in the account menu",
+          "consequences": "The client remembers the choice and sends ?household= on every call; a small addition to the shell step."
+        },
+        {
+          "title": "Show the most recently joined household first",
+          "consequences": "No new control, but a person can never get back to the other one."
+        }
+      ],
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
     }
   ]
 }
