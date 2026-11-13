@@ -15,10 +15,11 @@ export async function touchMember(env, user) {
 }
 
 export async function myHouseholds(env, userId) {
+  // created_at has whole seconds; rowid keeps two made in the same second in the order they were made.
   const rows = await env.DB
     .prepare(
       `SELECT h.id, h.name, m.role FROM members m JOIN households h ON h.id = m.household_id
-        WHERE m.user_id = ? ORDER BY h.created_at ASC`
+        WHERE m.user_id = ? ORDER BY h.created_at ASC, h.rowid ASC`
     )
     .bind(userId).all();
   return rows.results ?? [];
@@ -96,7 +97,32 @@ export async function acceptInvite(env, user, token) {
               ON CONFLICT(household_id, user_id) DO NOTHING`)
     .bind(inv.household_id, user.id, user.name || user.email || 'Someone', user.picture ?? null, user.email ?? null)
     .run();
+  await dropEmptyOwnHouseholds(env, user.id, inv.household_id);
   return inv.household_id;
+}
+
+/**
+ * Whoever opens the calendar before following an invite already has a household of one, made on
+ * their first visit; the client shows only the first household, so they would never see the one
+ * they joined. A household of theirs with nobody else, no people and no schedules holds nothing:
+ * it goes. One with anything in it stays.
+ */
+async function dropEmptyOwnHouseholds(env, userId, joinedId) {
+  const empty = (await env.DB
+    .prepare(
+      `SELECT h.id FROM households h JOIN members m ON m.household_id = h.id AND m.user_id = ?1
+        WHERE h.id <> ?2 AND h.created_by = ?1
+          AND NOT EXISTS (SELECT 1 FROM members o   WHERE o.household_id = h.id AND o.user_id <> ?1)
+          AND NOT EXISTS (SELECT 1 FROM people p    WHERE p.household_id = h.id)
+          AND NOT EXISTS (SELECT 1 FROM schedules s WHERE s.household_id = h.id)`
+    )
+    .bind(userId, joinedId).all()).results ?? [];
+  if (!empty.length) return;
+  await env.DB.batch(empty.flatMap(({ id }) => [
+    env.DB.prepare('DELETE FROM invites WHERE household_id = ?').bind(id),
+    env.DB.prepare('DELETE FROM members WHERE household_id = ?').bind(id),
+    env.DB.prepare('DELETE FROM households WHERE id = ?').bind(id),
+  ]));
 }
 
 /** An admin removes anybody else; anybody may leave. Their own schedules go with them. */
