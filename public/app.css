@@ -10,8 +10,8 @@ button, select, input { font:inherit; color:var(--text); background:var(--panel)
 button { cursor:pointer; } button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
 button.danger { color:var(--bad); } button.dim { color:var(--dim); border-color:transparent; background:transparent; }
 .chips { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 16px; }
-.chip { border-radius:999px; padding:4px 12px; border:2px solid var(--c,var(--line)); background:transparent; }
-.chip.on { background:var(--c,var(--line)); color:#fff; }
+.chip { border-radius:999px; padding:4px 12px; border:2px solid var(--c,var(--text)); background:transparent; }
+.chip.on { background:var(--c,var(--text)); color:#fff; }
 .bar { display:flex; gap:8px; align-items:center; margin-bottom:12px; }
 .bar .grow { flex:1; text-align:center; color:var(--dim); }
 .week { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }

@@ -55,7 +55,9 @@ function shell(route, body) {
         h('a', { href: '#/stundaskrar', class: route === 'sched' ? 'on' : '' }, T.schedules),
         h('a', { href: '#/heimilid', class: route === 'home' ? 'on' : '' }, T.household)),
       h('button', { class: 'dim', onclick: signOut }, T.signout)),
-    body);
+    // A view hands over a list (with nested lists and nulls for parts it leaves out); replaceChildren
+    // would turn an array into its text.
+    ...[body].flat(Infinity).filter(Boolean));
 }
 
 function signedOut() {
@@ -210,7 +212,12 @@ async function householdView() {
           ? h('button', { class: 'danger', onclick: () => run(async () => { await api('DELETE', `/household/members/${m.id}`); if (m.id === state.me.user.id) state.me = null; }) },
             m.id === state.me.user.id ? T.leave : T.remove) : null))),
     admin ? h('div', { class: 'card' }, h('h4', {}, T.invite), h('p', { class: 'dim' }, T.inviteHelp),
-      h('button', { class: 'primary', onclick: () => run(async () => { const r = await api('POST', '/household/invites'); linkBox.value = r.url; linkBox.select(); }) }, T.invite),
+      // Not through run(): redrawing the screen would throw the new link away.
+      h('button', { class: 'primary', onclick: async () => {
+        msg.textContent = '';
+        try { const r = await api('POST', '/household/invites'); linkBox.value = r.url; linkBox.select(); }
+        catch (e) { msg.textContent = say(e); }
+      } }, T.invite),
       h('div', { class: 'row' }, linkBox)) : null,
     msg]);
 }
