@@ -1,0 +1,28 @@
+name: CI
+
+# On every pull request: the .dev diagrams and knowledge files, then the tests (scripts/ci-test.sh).
+
+on:
+  pull_request:
+
+jobs:
+  diagrams:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: pip install jsonschema
+      - run: python3 Meta/Agents/Skills/validate_diagrams.py
+      - run: python3 Meta/Agents/Knowledge/validate_knowledge.py
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci || npm install
+      - run: scripts/ci-test.sh

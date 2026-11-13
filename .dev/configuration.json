@@ -1,0 +1,46 @@
+{
+  "$schema": "../Meta/Agents/Knowledge/schemas/configuration.schema.json",
+  "kind": "configuration",
+  "title": "Family calendar configuration",
+  "folder": ".",
+  "entities": [
+    {
+      "id": "accounts-jwks",
+      "title": "Login service public keys",
+      "summary": "The JWKS the app checks sign-in tokens against. Public, the same line every icelander.net app carries.",
+      "key": "ACCOUNTS_JWKS",
+      "type": "string ([vars] in wrangler.jsonc)",
+      "sensitive": false,
+      "scope": "per Worker",
+      "takesEffect": "at deploy",
+      "details": "Without it, or without the ACCOUNTS binding, nobody can sign in (fail closed).",
+      "evidenceStatus": "source-verified",
+      "sources": [
+        {
+          "path": "wrangler.jsonc"
+        },
+        {
+          "path": "vendor/icelander-auth/index.js",
+          "symbol": "createAuth"
+        }
+      ]
+    },
+    {
+      "id": "dev-sign-in",
+      "title": "Stand-in sign-in for tests",
+      "summary": "DEV_SIGN_IN=\"true\" turns on /calendar/auth/dev, only on a localhost address.",
+      "key": "DEV_SIGN_IN",
+      "type": "string (.dev.vars, never a deployed var)",
+      "sensitive": false,
+      "scope": "local development",
+      "takesEffect": "at startup",
+      "details": "Must be the string \"true\"; wrangler's --var passes a boolean, which the library ignores. Needs --local-upstream localhost:<port>.",
+      "evidenceStatus": "source-verified",
+      "sources": [
+        {
+          "path": "scripts/ci-test.sh"
+        }
+      ]
+    }
+  ]
+}

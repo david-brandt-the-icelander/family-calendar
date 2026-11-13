@@ -1,0 +1,11 @@
+{
+  "name": "family-calendar",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'DEV_SIGN_IN=\"true\"' > .dev.vars && wrangler dev --local-upstream localhost:8787",
+    "migrate:local": "wrangler d1 migrations apply family-calendar --local",
+    "test": "scripts/ci-test.sh"
+  },
+  "devDependencies": { "wrangler": "^4.0.0" }
+}

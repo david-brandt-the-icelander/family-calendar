@@ -1,0 +1,27 @@
+:root { color-scheme: light; --bg:#f6f7f9; --panel:#ffffff; --line:#dfe3e8; --text:#1d2330; --dim:#667085; --accent:#2563eb; --bad:#c0392b; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:16px/1.4 system-ui,sans-serif; }
+#app { max-width:1100px; margin:0 auto; padding:0 16px 48px; }
+header { display:flex; align-items:center; gap:12px; padding:12px 0; flex-wrap:wrap; }
+header h1 { font-size:1.2rem; margin:0; flex:1; }
+nav a { color:var(--dim); text-decoration:none; margin-right:12px; padding:4px 0; }
+nav a.on { color:var(--text); border-bottom:2px solid var(--accent); }
+button, select, input { font:inherit; color:var(--text); background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; }
+button { cursor:pointer; } button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+button.danger { color:var(--bad); } button.dim { color:var(--dim); border-color:transparent; background:transparent; }
+.chips { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 16px; }
+.chip { border-radius:999px; padding:4px 12px; border:2px solid var(--c,var(--line)); background:transparent; }
+.chip.on { background:var(--c,var(--line)); color:#fff; }
+.bar { display:flex; gap:8px; align-items:center; margin-bottom:12px; }
+.bar .grow { flex:1; text-align:center; color:var(--dim); }
+.week { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
+.day { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px; min-height:120px; }
+.day.today { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
+.day h3 { margin:0 0 6px; font-size:.85rem; color:var(--dim); font-weight:600; }
+.occ { border-left:4px solid var(--c,var(--accent)); background:#00000008; border-radius:4px; padding:3px 6px; margin-bottom:4px; font-size:.82rem; }
+.occ b { display:block; font-weight:600; } .occ span { color:var(--dim); }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:12px; }
+.row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:6px 0; }
+label { display:flex; flex-direction:column; gap:2px; color:var(--dim); font-size:.8rem; }
+.msg { color:var(--bad); min-height:1.4em; } .dim { color:var(--dim); }
+@media (max-width:720px) { .week { grid-template-columns:1fr; } .day { min-height:0; } }

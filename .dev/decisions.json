@@ -1,0 +1,115 @@
+{
+  "$schema": "../Meta/Agents/Knowledge/schemas/decisions.schema.json",
+  "kind": "decisions",
+  "title": "Family calendar decisions",
+  "folder": ".",
+  "entities": [
+    {
+      "id": "own-repository",
+      "title": "The calendar is its own repository and Worker",
+      "summary": "It is not part of innkaupalistinn.net, and shares no database with it.",
+      "status": "accepted",
+      "context": "An earlier plan linked the calendar to Innkaupalistinn through a shared family database and a sign-in hub inside the shopping app.",
+      "decision": "A repository and Worker of its own at icelander.net/calendar, signing in through icelander.net's login service.",
+      "rationale": "The owner asked for this repository and for the same Google sign-in the rest of icelander.net uses.",
+      "decidedBy": "The owner",
+      "decidedOn": "2026-11-13",
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "google-through-accounts",
+      "title": "Sign-in is the icelander.net login service",
+      "summary": "Google (and the other providers) through the vendored icelander-auth library and an ACCOUNTS service binding; no provider code here.",
+      "status": "accepted",
+      "context": "The owner asked for the same Google login mechanism Snekkjó uses.",
+      "decision": "App id calendar, cookie calendar_session on /calendar, callback https://icelander.net/calendar/auth/callback.",
+      "rationale": "One sign-in for icelander.net; the provider needs to know one site only.",
+      "decidedBy": "The owner",
+      "decidedOn": "2026-11-13",
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "source-verified",
+      "sources": [
+        {
+          "path": "src/index.js",
+          "symbol": "auth"
+        }
+      ]
+    },
+    {
+      "id": "light-only",
+      "title": "Light mode only",
+      "summary": "No dark theme.",
+      "status": "accepted",
+      "context": "Requested by the owner.",
+      "decision": "The client declares color-scheme light and has no dark styles.",
+      "decidedBy": "The owner",
+      "decidedOn": "2026-11-13",
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "source-verified",
+      "sources": [
+        {
+          "path": "public/app.css"
+        }
+      ]
+    },
+    {
+      "id": "no-hidden-schedules",
+      "title": "Nothing is hidden inside a household",
+      "summary": "No private or busy-only schedules.",
+      "status": "accepted",
+      "context": "A family does not need hidden information, said the owner.",
+      "decision": "Every member sees every schedule in their household.",
+      "decidedBy": "The owner",
+      "decidedOn": "2026-11-13",
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "source-verified",
+      "sources": [
+        {
+          "path": "src/schedules.js",
+          "symbol": "agenda"
+        }
+      ]
+    },
+    {
+      "id": "innkaupalistinn-link",
+      "title": "Whether and how the calendar links to Innkaupalistinn",
+      "summary": "The first idea was that a family configures once for both apps. Innkaupalistinn.net is a separate domain outside icelander.net's sign-in, so the two now share nothing.",
+      "status": "open",
+      "context": "Households exist separately in each app. Sharing them would need either innkaupalistinn.net joining the login service (a separate domain, so cookies and provider redirect URIs differ) or a household API one app calls on the other.",
+      "waitingOn": "The owner",
+      "options": [
+        {
+          "title": "Keep them separate",
+          "consequences": "A family sets up each app once; nothing to build."
+        },
+        {
+          "title": "Innkaupalistinn signs in through the login service too",
+          "consequences": "One identity for both; households still separate until a sharing step is designed."
+        }
+      ],
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
+    }
+  ]
+}
