@@ -7,5 +7,8 @@
     "migrate:local": "wrangler d1 migrations apply family-calendar --local",
     "test": "scripts/ci-test.sh"
   },
-  "devDependencies": { "wrangler": "^4.0.0" }
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "wrangler": "^4.0.0"
+  }
 }

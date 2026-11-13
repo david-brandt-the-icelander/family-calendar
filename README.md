@@ -47,7 +47,9 @@ scripts/ci-test.sh
 ```
 
 Unit tests of the weekly-pattern expansion, a check that `vendor/icelander-auth` is unedited, then the API
-against `wrangler dev` using the library's stand-in sign-in.
+against `wrangler dev` using the library's stand-in sign-in, then the client in headless Chromium
+(`test/ui/`; `npx playwright install chromium` once): every screen draws, a schedule shows in the week, an
+invite lets a second person in, phone width, Icelandic.
 
 ## API
 

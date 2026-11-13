@@ -2,7 +2,7 @@
 
 The family calendar is one Cloudflare Worker (`src/`) with a D1 database (`migrations/`) and a static client (`public/`), served at **icelander.net/calendar**. Households, the people in them and their weekly schedules live here. Who a person is, and how they sign in, does not: that is icelander.net's login service (Google and the others), reached through the vendored `vendor/icelander-auth` and a service binding. Nothing in this repository talks to Google.
 
-Run the tests with `scripts/ci-test.sh` (unit tests, the vendored-library check, a fresh local D1 and `wrangler dev` on :8801 with the library's stand-in sign-in).
+Run the tests with `scripts/ci-test.sh` (unit tests, the vendored-library check, a fresh local D1 and `wrangler dev` on :8801 with the library's stand-in sign-in, then the API in `test/itest.sh` and the client in a browser in `test/ui/`, Playwright; run `npx playwright install chromium` once). A change to `public/` needs a browser test that would fail without it: the API tests never draw a page.
 
 ## Rules
 

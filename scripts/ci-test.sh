@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Everything the tests need, for CI and for a developer: unit tests, the vendored-library check, a fresh local
-# D1, `wrangler dev` with the stand-in sign-in on :8801, then test/itest.sh.
+# D1, `wrangler dev` with the stand-in sign-in on :8801, then the API (test/itest.sh) and the client in a
+# browser (test/ui/, Playwright; `npx playwright install chromium` once).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -18,3 +19,4 @@ trap 'kill $dev 2>/dev/null || true' EXIT
 for _ in $(seq 60); do curl -fsS -o /dev/null http://127.0.0.1:8801/calendar/health && break; kill -0 $dev 2>/dev/null || { cat .wrangler/dev.log; exit 1; }; sleep 1; done
 curl -fsS -o /dev/null http://127.0.0.1:8801/calendar/health || { echo "wrangler dev never answered"; cat .wrangler/dev.log; exit 1; }
 test/itest.sh
+npx playwright test
