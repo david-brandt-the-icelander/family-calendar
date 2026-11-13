@@ -1,0 +1,24 @@
+// The family calendar, at icelander.net/calendar. Deploy from the repository root with
+//   npx wrangler deploy
+// No secrets belong in this file. Sign-in is the login service's (icelander.net/accounts): this app is
+// registered there as "calendar" (its APPS), and checks tokens against ACCOUNTS_JWKS.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "family-calendar",
+  "account_id": "ab026008f5aa2bef2dca4cfccd0f70ef",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-22",
+  "workers_dev": false,
+  "preview_urls": false,
+  // A path on icelander.net itself, so the sign-in providers know one site.
+  "routes": [{ "pattern": "icelander.net/calendar*", "zone_name": "icelander.net" }],
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": true },
+  // Households, people, schedules (migrations/, applied with `npx wrangler d1 migrations apply family-calendar --remote`).
+  "d1_databases": [{ "binding": "DB", "database_name": "family-calendar", "database_id": "88e5374e-7551-473c-9bd2-5578a603b98c", "migrations_dir": "migrations" }],
+  "services": [{ "binding": "ACCOUNTS", "service": "accounts", "entrypoint": "Internal" }],
+  "vars": {
+    // The login service's public keys (the same line every app carries; docs/accounts.md in icelander.net).
+    "ACCOUNTS_JWKS": "{\"keys\":[{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"kid\":\"k2026a\",\"x\":\"WIEomi0LTalJvQndhD7abl8ty3YcliQ0vEz4XjLXayc\"}]}"
+  },
+  "observability": { "enabled": true }
+}

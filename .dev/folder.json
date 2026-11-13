@@ -1,0 +1,34 @@
+{
+  "$schema": "../Meta/Agents/Knowledge/schemas/folder.schema.json",
+  "kind": "folder",
+  "title": "Family calendar",
+  "folder": ".",
+  "entities": [
+    {
+      "id": "folder",
+      "title": "Family calendar",
+      "summary": "One Worker, one D1 and a static client: a household's shared weekly schedules, at icelander.net/calendar, signed in through icelander.net's login service.",
+      "purpose": "Lets each person in a household, and children or others without a sign-in, keep weekly schedules (work, school, lessons) with alternating weeks and per-day exceptions, and lets the household see one person's week or everyone's.",
+      "boundaries": [
+        "Identity and sign-in (Google and the rest) belong to the login service in the icelander.net repository; this repository vendors its client library and never edits it.",
+        "The calendar knows a person only by the login service's id, plus the name and picture it last saw.",
+        "Nothing is hidden inside a household: no private or busy-only schedules."
+      ],
+      "evidenceStatus": "source-verified",
+      "sources": [
+        {
+          "path": "src/index.js",
+          "symbol": "route"
+        },
+        {
+          "path": "src/schedules.js",
+          "symbol": "agenda"
+        },
+        {
+          "path": "src/expand.js",
+          "symbol": "expand"
+        }
+      ]
+    }
+  ]
+}

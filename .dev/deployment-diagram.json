@@ -1,0 +1,89 @@
+{
+  "$schema": "../Meta/Agents/Skills/describe-deployment-diagram/schema.json",
+  "kind": "deployment",
+  "title": "Family calendar deployment diagram",
+  "folder": ".",
+  "description": "One Worker on the icelander.net zone, its D1, and the login service it binds to.",
+  "sources": [
+    {
+      "path": "wrangler.jsonc",
+      "symbol": "routes"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "browser",
+      "name": "Household member's browser",
+      "kind": "client",
+      "description": "A phone or computer using the calendar.",
+      "actor": "Actors/household-member.md"
+    },
+    {
+      "id": "admin-browser",
+      "name": "Household admin's browser",
+      "kind": "client",
+      "description": "The same app, used to invite, rename and remove people.",
+      "actor": "Actors/household-admin.md"
+    },
+    {
+      "id": "worker",
+      "name": "family-calendar Worker",
+      "kind": "process",
+      "description": "Serves icelander.net/calendar*, ahead of the site's own Worker."
+    },
+    {
+      "id": "d1",
+      "name": "family-calendar D1",
+      "kind": "database",
+      "description": "Households, people and schedules."
+    },
+    {
+      "id": "accounts",
+      "name": "accounts Worker (icelander.net)",
+      "kind": "process",
+      "description": "The login service; reached by a service binding, never from the internet."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "worker-code",
+      "name": "src/ and public/",
+      "source": "wrangler.jsonc",
+      "deployedTo": "worker",
+      "description": "The Worker and its static assets."
+    },
+    {
+      "id": "schema",
+      "name": "migrations/",
+      "source": "migrations/0001_init.sql",
+      "deployedTo": "d1",
+      "description": "Applied with wrangler d1 migrations apply."
+    }
+  ],
+  "relationships": [
+    {
+      "from": "browser",
+      "to": "worker",
+      "kind": "connects-to",
+      "description": "HTTPS to icelander.net/calendar."
+    },
+    {
+      "from": "admin-browser",
+      "to": "worker",
+      "kind": "connects-to",
+      "description": "HTTPS to icelander.net/calendar."
+    },
+    {
+      "from": "worker",
+      "to": "d1",
+      "kind": "connects-to",
+      "description": "The DB binding."
+    },
+    {
+      "from": "worker",
+      "to": "accounts",
+      "kind": "connects-to",
+      "description": "The ACCOUNTS service binding (Internal entrypoint)."
+    }
+  ]
+}

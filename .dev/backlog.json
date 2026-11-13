@@ -1,0 +1,60 @@
+{
+  "$schema": "../Meta/Agents/Knowledge/schemas/backlog.schema.json",
+  "kind": "backlog",
+  "title": "Family calendar backlog",
+  "folder": ".",
+  "entities": [
+    {
+      "id": "events",
+      "title": "One-off events",
+      "type": "feature",
+      "status": "proposed",
+      "summary": "Appointments that happen once, beside the weekly schedules.",
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
+    },
+    {
+      "id": "free-time",
+      "title": "When is everyone free?",
+      "type": "feature",
+      "status": "proposed",
+      "summary": "A /free call over the agenda for chosen people.",
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
+    },
+    {
+      "id": "ical",
+      "title": "Read-only iCal feed",
+      "type": "feature",
+      "status": "proposed",
+      "summary": "A revocable tokenised .ics feed a phone calendar can subscribe to.",
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
+    },
+    {
+      "id": "email-invites",
+      "title": "Send invites by email",
+      "type": "feature",
+      "status": "proposed",
+      "summary": "Invites are links the admin passes on. Mailing them needs a Resend key and sender for this Worker.",
+      "origin": {
+        "kind": "conversation",
+        "by": "The owner",
+        "date": "2026-11-13"
+      },
+      "evidenceStatus": "proposed"
+    }
+  ]
+}

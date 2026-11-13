@@ -1,0 +1,125 @@
+{
+  "$schema": "../Meta/Agents/Skills/describe-component-diagram/schema.json",
+  "kind": "component",
+  "title": "Family calendar component diagram",
+  "folder": ".",
+  "description": "The calendar Worker, the login service it signs people in through, and its database.",
+  "sources": [
+    {
+      "path": "src/index.js",
+      "symbol": "route"
+    },
+    {
+      "path": "src/households.js",
+      "symbol": "acceptInvite"
+    },
+    {
+      "path": "src/schedules.js",
+      "symbol": "agenda"
+    },
+    {
+      "path": "src/expand.js",
+      "symbol": "expand"
+    }
+  ],
+  "components": [
+    {
+      "id": "worker",
+      "name": "Calendar Worker (index.js)",
+      "folder": "src",
+      "responsibility": "Routes /calendar: the library's auth routes, invites, the JSON API and the static client."
+    },
+    {
+      "id": "auth",
+      "name": "icelander-auth (vendor)",
+      "folder": "vendor/icelander-auth",
+      "responsibility": "The app side of the one sign-in: state cookie, token check, redeem and live session lookup through the ACCOUNTS binding."
+    },
+    {
+      "id": "households",
+      "name": "Households (households.js)",
+      "folder": "src",
+      "responsibility": "Household creation on first visit, members, single-use invite links, leaving and removal."
+    },
+    {
+      "id": "schedules",
+      "name": "Schedules (schedules.js)",
+      "folder": "src",
+      "responsibility": "People, schedules, weekly rules, exceptions and the agenda, with household scoping and edit rights."
+    },
+    {
+      "id": "expand",
+      "name": "Expansion (expand.js)",
+      "folder": "src",
+      "responsibility": "Weekly rules, alternating weeks, validity and exceptions into dated occurrences; pure."
+    },
+    {
+      "id": "client",
+      "name": "Client",
+      "folder": "public",
+      "responsibility": "Week view with person filter, schedule editor, household screen; Icelandic and English, light only."
+    },
+    {
+      "id": "accounts",
+      "name": "icelander.net login service",
+      "external": true,
+      "responsibility": "Google and the other providers; users, sessions and the service-binding entrypoint."
+    },
+    {
+      "id": "db",
+      "name": "D1 database",
+      "external": true,
+      "responsibility": "households, members, invites, people, schedules, schedule_rules, schedule_exceptions."
+    }
+  ],
+  "relationships": [
+    {
+      "from": "worker",
+      "to": "auth",
+      "kind": "depends-on",
+      "description": "createAuth, handle and currentUser."
+    },
+    {
+      "from": "worker",
+      "to": "households",
+      "kind": "depends-on",
+      "description": "Every request resolves the user's households first."
+    },
+    {
+      "from": "worker",
+      "to": "schedules",
+      "kind": "depends-on",
+      "description": "The /api routes inside a household."
+    },
+    {
+      "from": "schedules",
+      "to": "expand",
+      "kind": "depends-on",
+      "description": "The agenda expands each schedule."
+    },
+    {
+      "from": "auth",
+      "to": "accounts",
+      "kind": "depends-on",
+      "description": "Redeems tokens and looks sessions up through the ACCOUNTS service binding."
+    },
+    {
+      "from": "households",
+      "to": "db",
+      "kind": "depends-on",
+      "description": "All household rows."
+    },
+    {
+      "from": "schedules",
+      "to": "db",
+      "kind": "depends-on",
+      "description": "All schedule rows, always with household_id."
+    },
+    {
+      "from": "client",
+      "to": "worker",
+      "kind": "depends-on",
+      "description": "fetch to /calendar/api."
+    }
+  ]
+}
