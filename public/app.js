@@ -227,7 +227,9 @@ async function loadPeople() { state.people = (await api('GET', '/people')).peopl
 
 async function render() {
   try {
-    if (!state.me) { state.me = await api('GET', '/me'); await loadPeople(); }
+    // People are fetched on every screen: somebody may have joined since the page loaded.
+    if (!state.me) state.me = await api('GET', '/me');
+    await loadPeople();
     if (location.hash.startsWith('#/stundaskrar')) await schedulesView();
     else if (location.hash.startsWith('#/heimilid')) await householdView();
     else await weekView();
