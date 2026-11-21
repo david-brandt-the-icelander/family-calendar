@@ -1,6 +1,6 @@
 # Family calendar
 
-**https://icelander.net/calendar**
+**https://icelander.net/apps/calendar** (and, until the owner switches it off, still https://icelander.net/calendar)
 
 A shared calendar for a household. Everybody keeps weekly schedules (work hours, school hours, a piano
 lesson), including children and others who have no sign-in of their own, and the household sees them one
@@ -69,3 +69,18 @@ All under `/calendar/api`, for a signed-in user (`?household=<id>` picks one; th
 
 Sign-in routes (`/calendar/auth/sign-in`, `/callback`, `/sign-out`, `/me`) are the library's.
 `/calendar/join/<token>` spends an invite.
+
+## Moved to /apps/calendar (2026-11-21)
+
+The owner decided that every app has a home under `icelander.net/apps/<id>`. This Worker now has both routes,
+`icelander.net/apps/calendar*` and `icelander.net/calendar*`, and signs in at each with its own callback
+(`/apps/calendar/auth/callback` and `/calendar/auth/callback`, both registered in icelander.net's `APPS`) and its own
+cookie path, so nothing about the old address changed. Deploy order:
+
+1. icelander.net's `accounts` Worker, with the new callback registered (icelander.net PR #162, `APPS`).
+2. This Worker (both routes, `OLD_PATH_REDIRECTS` still `"false"`). Everyone is signed out of the new path once.
+3. When nothing uses the old address any more, set `OLD_PATH_REDIRECTS` to `"true"` in `wrangler.jsonc` and deploy:
+   `/calendar*` then answers a 308 to the same path under `/apps/calendar`, for every method, except
+   `/calendar/auth/callback`, which keeps answering until the old registration is retired. Then remove `calendar`
+   from `planned` in icelander.net's `site/apps.json` and add its card.
+Rollback: set it back to `"false"`; the old path was never touched.

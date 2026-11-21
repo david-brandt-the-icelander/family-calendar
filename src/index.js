@@ -1,4 +1,5 @@
-// Family calendar — a shared calendar for a household, at icelander.net/calendar.
+// Family calendar — a shared calendar for a household, at icelander.net/apps/calendar (and, until the owner turns on
+// OLD_PATH_REDIRECTS, still at icelander.net/calendar: both paths are served by this one Worker).
 //
 // Sign-in is icelander.net's one login service (Google and the rest), through the vendored
 // icelander-auth library and a service binding; nothing here talks to Google. This Worker keeps
@@ -12,13 +13,18 @@ import {
 } from './households.js';
 import * as S from './schedules.js';
 
-const BASE = '/calendar';
+/** Where the calendar lived (and still answers) and where it lives now (the owner's decision of 2026-11-21). */
+// Not exported: a Worker module may export only handlers and classes, and a string stops it starting.
+const OLD = '/calendar';
+const NEW = '/apps/calendar';
 const UUID_RE = /^[0-9a-fA-F-]{8,36}$/;
 
-export const auth = createAuth({
-  app: 'calendar', cookie: 'calendar_session',
-  basePath: `${BASE}/auth`, cookiePath: BASE, home: `${BASE}/`,
-});
+// One sign-in per base path, both for the app "calendar": each has its own callback (both registered in icelander.net's
+// APPS) and its own cookie Path, so nobody is signed in to one by the other and the old one keeps working untouched.
+const authFor = (base) => createAuth({ app: 'calendar', cookie: 'calendar_session', basePath: `${base}/auth`, cookiePath: base, home: `${base}/` });
+const authOld = authFor(OLD);
+const authNew = authFor(NEW);
+export const auth = authOld; // as before: the old path's sign-in
 
 export default {
   async fetch(request, env) {
@@ -31,6 +37,15 @@ export default {
 };
 
 async function route(request, env, url) {
+  const BASE = url.pathname === NEW || url.pathname.startsWith(`${NEW}/`) ? NEW : OLD;
+  const auth = BASE === NEW ? authNew : authOld;
+
+  // Once the owner has turned it on, the old path answers a 308 to the same path under /apps/calendar, for every method
+  // and body, except the old sign-in callback, which keeps answering until the old registration is retired.
+  if (BASE === OLD && env.OLD_PATH_REDIRECTS === 'true' && url.pathname !== `${OLD}/auth/callback` && (url.pathname === OLD || url.pathname.startsWith(`${OLD}/`))) {
+    return Response.redirect(`${url.origin}${NEW}${url.pathname.slice(OLD.length)}${url.search}`, 308);
+  }
+
   // /auth/sign-in, /auth/callback, /auth/sign-out, /auth/me — and /auth/dev on localhost with DEV_SIGN_IN.
   const answered = await auth.handle(request, env);
   if (answered) return answered;
@@ -39,7 +54,7 @@ async function route(request, env, url) {
   if (url.pathname === BASE) return Response.redirect(`${url.origin}${BASE}/${url.search}`, 301);
 
   const path = url.pathname.replace(/\/+$/, '') || '/';
-  if (path === '/health' || path === `${BASE}/health`) return json({ ok: true });
+  if (path === '/health' || path === `${OLD}/health` || path === `${NEW}/health`) return json({ ok: true });
   if (path !== BASE && !path.startsWith(`${BASE}/`)) return new Response('Not found', { status: 404 });
   const rest = path.slice(BASE.length) || '/';
 
@@ -87,7 +102,7 @@ async function route(request, env, url) {
     if (seg[1] === 'invites') {
       if (!admin) return fail('forbidden', 403, 'admins only');
       if (method === 'GET') return listInvites(env, householdId);
-      if (method === 'POST') return createInvite(env, user, householdId, url.origin);
+      if (method === 'POST') return createInvite(env, user, householdId, url.origin, env.OLD_PATH_REDIRECTS === 'true' ? NEW : BASE);
       if (method === 'DELETE' && seg[2]) return revokeInvite(env, householdId, seg[2]);
     }
     if (seg[1] === 'members' && seg[2] && method === 'DELETE') return removeMember(env, user, role, householdId, seg[2]);
@@ -122,7 +137,7 @@ async function route(request, env, url) {
   return fail('not_found', 404, 'no such route');
 }
 
-/** The static client lives at the Worker's root; the site serves it under /calendar. */
+/** The static client lives at the Worker's root; the site serves it under /apps/calendar and /calendar. */
 function assets(request, env, url, rest) {
   const to = new URL(request.url);
   to.pathname = rest;

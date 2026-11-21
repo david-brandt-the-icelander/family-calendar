@@ -175,6 +175,32 @@
         "date": "2026-11-13"
       },
       "evidenceStatus": "proposed"
+    },
+    {
+      "id": "move-to-apps-calendar",
+      "title": "The calendar's home is /apps/calendar",
+      "summary": "One Worker serves both /apps/calendar and /calendar; the old path redirects (308) only when the owner turns it on.",
+      "status": "accepted",
+      "decidedBy": "The owner",
+      "decidedOn": "2026-11-21",
+      "context": "Every app of the owner has a home under icelander.net/apps/<id>. The calendar's callback and cookie path were registered at /calendar.",
+      "decision": "Both routes, each with its own sign-in (callback and cookie path, same app id and cookie name). OLD_PATH_REDIRECTS=\"true\" makes /calendar* answer a 308 to /apps/calendar* for every method except /calendar/auth/callback, which keeps answering. New invite links use the new path once the redirect is on; old invite links work at either.",
+      "rationale": "Additive and reversible: the old address works exactly as before until the switch is flipped.",
+      "evidenceStatus": "source-verified",
+      "sources": [
+        {
+          "path": "src/index.js",
+          "symbol": "route"
+        },
+        {
+          "path": "wrangler.jsonc",
+          "symbol": "routes"
+        },
+        {
+          "path": "test/unit-base-path.mjs",
+          "symbol": "OLD_PATH_REDIRECTS"
+        }
+      ]
     }
   ]
 }

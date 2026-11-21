@@ -41,6 +41,27 @@
           "path": "scripts/ci-test.sh"
         }
       ]
+    },
+    {
+      "id": "old-path-redirects",
+      "title": "OLD_PATH_REDIRECTS",
+      "summary": "\"true\" makes /calendar* answer a 308 to /apps/calendar* (except the old sign-in callback); \"false\" serves both paths.",
+      "key": "OLD_PATH_REDIRECTS",
+      "type": "Worker var",
+      "sensitive": false,
+      "scope": "family-calendar Worker",
+      "takesEffect": "at-deploy",
+      "evidenceStatus": "source-verified",
+      "sources": [
+        {
+          "path": "wrangler.jsonc",
+          "symbol": "vars"
+        },
+        {
+          "path": "src/index.js",
+          "symbol": "route"
+        }
+      ]
     }
   ]
 }
