@@ -6,6 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 node test/unit-expand.mjs
+node test/unit-base-path.mjs
 node test/vendored.mjs
 
 rm -rf .wrangler/state

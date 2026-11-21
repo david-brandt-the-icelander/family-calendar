@@ -58,7 +58,7 @@ export async function renameHousehold(env, householdId, body) {
   return json({ ok: true });
 }
 
-export async function createInvite(env, user, householdId, origin) {
+export async function createInvite(env, user, householdId, origin, base = '/calendar') {
   const token = randomToken(24);
   await env.DB.batch([
     env.DB.prepare(`DELETE FROM invites WHERE expires_at <= datetime('now')`),
@@ -67,7 +67,7 @@ export async function createInvite(env, user, householdId, origin) {
                 VALUES (?,?,?, datetime('now', '+${INVITE_DAYS} days'))`)
       .bind(token, householdId, user.id),
   ]);
-  return json({ token, url: `${origin}/calendar/join/${token}`, days: INVITE_DAYS }, 201);
+  return json({ token, url: `${origin}${base}/join/${token}`, days: INVITE_DAYS }, 201);
 }
 
 export async function listInvites(env, householdId) {

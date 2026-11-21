@@ -20,6 +20,8 @@ signin anna Anna; signin bjorn Bjorn; signin zed Zed
 chk "dev sign-in gives a session"  200 "$(code anna $B/api/me)"
 chk "first visit makes a household" 1  "$(jq1 'len(d["households"])')"
 chk "  and the person is its admin" admin "$(jq1 'd["households"][0]["role"]')"
+chk "the new home answers" 200 "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8801/apps/calendar/health)"
+chk "and signs in with its own callback" 302 "$(curl -s -o /dev/null -w '%{http_code}' 'http://localhost:8801/apps/calendar/auth/sign-in?return=/apps/calendar/')"
 chk "/calendar redirects to /calendar/" 301 "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8801/calendar)"
 
 echo "--- household and invites"

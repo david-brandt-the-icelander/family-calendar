@@ -27,8 +27,11 @@ function h(tag, attrs = {}, ...kids) {
   return el;
 }
 
+// The page is served under /apps/calendar (and, until the old path is switched off, /calendar): talk to the one it was loaded from.
+const BASE = location.pathname.startsWith('/apps/calendar') ? '/apps/calendar' : '/calendar';
+
 async function api(method, path, body) {
-  const res = await fetch(`/calendar/api${path}`, {
+  const res = await fetch(`${BASE}/api${path}`, {
     method, headers: body ? { 'content-type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined,
   });
   const data = await res.json().catch(() => ({}));
@@ -65,7 +68,7 @@ function signedOut() {
   root.replaceChildren(h('div', { class: 'card' },
     h('h1', {}, T.app), h('p', { class: 'dim' }, T.signinBlurb),
     failed ? h('p', { class: 'msg' }, T.invalidInvite) : null,
-    h('a', { href: '/calendar/auth/sign-in?return=/calendar/' }, h('button', { class: 'primary' }, T.signin))));
+    h('a', { href: `${BASE}/auth/sign-in?return=${BASE}/` }, h('button', { class: 'primary' }, T.signin))));
 }
 
 // ---------------------------------------------------------------- week view
@@ -189,7 +192,7 @@ async function schedulesView() {
 
 
 async function signOut() {
-  await fetch('/calendar/auth/sign-out', { method: 'POST', headers: { origin: location.origin } }).catch(() => {});
+  await fetch(`${BASE}/auth/sign-out`, { method: 'POST', headers: { origin: location.origin } }).catch(() => {});
   state.me = null; location.hash = '#/'; location.reload();
 }
 
