@@ -14,16 +14,17 @@ import {
 import * as S from './schedules.js';
 
 /** Where the calendar lived (and still answers) and where it lives now (the owner's decision of 2026-11-21). */
-export const OLD = '/calendar';
-export const NEW = '/apps/calendar';
+// Not exported: a Worker module may export only handlers and classes, and a string stops it starting.
+const OLD = '/calendar';
+const NEW = '/apps/calendar';
 const UUID_RE = /^[0-9a-fA-F-]{8,36}$/;
 
 // One sign-in per base path, both for the app "calendar": each has its own callback (both registered in icelander.net's
 // APPS) and its own cookie Path, so nobody is signed in to one by the other and the old one keeps working untouched.
 const authFor = (base) => createAuth({ app: 'calendar', cookie: 'calendar_session', basePath: `${base}/auth`, cookiePath: base, home: `${base}/` });
-export const authOld = authFor(OLD);
-export const authNew = authFor(NEW);
-export const auth = authOld;
+const authOld = authFor(OLD);
+const authNew = authFor(NEW);
+export const auth = authOld; // as before: the old path's sign-in
 
 export default {
   async fetch(request, env) {
