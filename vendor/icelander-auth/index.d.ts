@@ -24,12 +24,39 @@ export interface User {
    * Snekkjó guest's own link). Only a provider's sessions carry roles beyond the implicit ones.
    */
   via: "provider" | "email" | "link";
+  /**
+   * The active tenants the person is in (docs/tenants.md), for an app the login service lists as tenant-aware and a
+   * provider's sign-in; [] otherwise. Added in 2.2.0: an older login service leaves it out.
+   */
+  tenants?: TenantRef[];
+  /** The tenant this session acts in (chosen at sign-in, else the person's only one), or null. */
+  tenant?: TenantRef | null;
   /** Only on a local host's stand-in sign-in. */
   dev?: boolean;
 }
 
+/** The generic roles in a tenant; apps map them to their own permissions. */
+export type TenantRole = "owner" | "admin" | "member" | "guest";
+export declare const TENANT_ROLES: TenantRole[];
+export interface TenantRef { id: string; name: string; role: TenantRole; /** What an app calls the person inside this tenant, when set. */ handle?: string }
+export interface TenantMember { user: string; role: TenantRole; handle: string | null }
+export interface TenantInfo { id: string; name: string; kind: "household" | "org" | "personal"; status: "active" | "disabled" }
+/** What the login service's binding answers about tenants, for any service that has it (z3, Snekkjó, …). Members are ids only. */
+export interface TenantDirectory {
+  /** The active tenants of one person, by name. */
+  tenantsOf(userId: string): Promise<TenantRef[]>;
+  /** The person's role in one active tenant, or null. */
+  membership(userId: string, tenantId: string): Promise<TenantRef | null>;
+  /** A tenant, disabled ones too, with its members; null if there is no such tenant. */
+  tenant(tenantId: string): Promise<{ tenant: TenantInfo; members: TenantMember[] } | null>;
+}
+/** The person's role in this tenant (from a user an app got from the login service), or undefined. */
+export declare function tenantRole(user: User | null | undefined, tenantId: string): TenantRole | undefined;
+/** Whether the person holds at least this role in the tenant. */
+export declare function tenantAtLeast(user: User | null | undefined, tenantId: string, role: TenantRole): boolean;
+
 /** What an app reaches the login service through: a service binding to its Internal entrypoint. */
-export interface AccountsBinding {
+export interface AccountsBinding extends Partial<TenantDirectory> {
   redeem(token: string, app: string): Promise<{ session?: string; user?: User; error?: string }>;
   session(session: string, app: string): Promise<User | null>;
   signOut(session: string, app: string): Promise<void>;
@@ -37,7 +64,27 @@ export interface AccountsBinding {
   heartbeat(session: string, app: string, game: string): Promise<{ minutes: number } | null>;
   tips(session: string, app: string, shown?: boolean): Promise<TipPrompt>;
   admin(session: string, app: string, op: string, args?: Record<string, unknown>): Promise<{ result?: unknown; error?: string }>;
+  entitlements?(session: string, app: string): Promise<Entitlements | null>;
+  entitlementsOf?(userId: string, app: string): Promise<Entitlements | null>;
+  requestAccess?(session: string, app: string, capability: string): Promise<{ ok?: true; error?: string }>;
   openSession?(app: string, who: { id: string; name: string; email?: string }, reason: string): Promise<{ session?: string; error?: string }>;
+}
+
+/** What an app may give a person (docs/identity-app-plan.md, 5.3): their rank, this app's limits, and the owner's separate approvals. */
+export interface Entitlements {
+  user: string;
+  rank: { id: string; level: number; name: string; source: string; until: number | null };
+  roles: string[];
+  /** This app's limits only; null is no limit, a key the rank has no number for is 0. */
+  limits: Record<string, number | null>;
+  limitsSource: Record<string, "rank" | "override" | "self">;
+  /** The costly capabilities the owner approved for this person ("ai-images", "write-keys"). */
+  approvals: string[];
+  dollarCeilingCents: number | null;
+  /** Changes whenever anything about the person's entitlements changes. */
+  v: number;
+  /** Seconds an answer may be kept. */
+  ttl: number;
 }
 
 export interface TipPrompt {
@@ -77,6 +124,8 @@ export interface Auth {
   cookieName: string;
   handle(request: Request, env: AuthEnv): Promise<Response | undefined>;
   currentUser(request: Request, env: AuthEnv): Promise<User | null>;
+  /** The person's rank and this app's limits, kept for the answer's ttl; { fresh: true } asks again (use before anything that costs money). */
+  entitlements(request: Request, env: AuthEnv, options?: { fresh?: boolean }): Promise<Entitlements | null>;
   requireRole(request: Request, env: AuthEnv, role: string, options?: { api?: boolean }): Promise<{ user: User; response?: undefined } | { user?: User | null; response: Response }>;
   hasRole(user: User | null | undefined, role: string): boolean;
   signInPath(returnTo: string): string;
@@ -88,7 +137,20 @@ export interface Auth {
 
 export declare function createAuth(options: AuthOptions): Auth;
 
+/** One limit of an answer: 0 if there is no answer or no such limit, Infinity for no limit. */
+export declare function limitOf(answer: Entitlements | null | undefined, key: string): number;
+/** Whether the owner approved this capability for the person. */
+export declare function approved(answer: Entitlements | null | undefined, capability: string): boolean;
+
+/** The claims of an access token the identity app issued for an MCP server (typ at+jwt). */
+export interface AccessTokenClaims { iss: string; aud: string; sub: string; scope: string; client_id: string; gid: string; /** The tenant the token acts in, when the resource is tenant-aware. */ tid?: string; iat: number; exp: number; jti: string }
+export declare const OAUTH_ISSUER: string;
+/** Checks an access token's signature (against pinned keys), type, issuer, resource, lifetime and scope; undefined if anything is off. */
+export declare function verifyAccessToken(token: string, options: { jwks: string | object; resource: string; now?: number; issuer?: string }): Promise<AccessTokenClaims | undefined>;
+
 export interface TokenClaims {
+  /** The tenant this sign-in acts in (an app that opted in; the person is a member). */
+  tid?: string;
   iss: string;
   aud: string;
   sub: string;

@@ -17,12 +17,13 @@
 // pinned public keys in env.ACCOUNTS_JWKS. Without either, sign-in is off and nobody is signed in
 // (fail closed). Tokens, cookies and session values are never logged.
 
-export const VERSION = "2.0.1";
+export const VERSION = "2.2.0";
 /** The login service: icelander.net/accounts (a Worker of its own on that path). */
 export const ISSUER = "https://icelander.net/accounts";
 /** How long an app's sign-in lasts, unless the user signs out or is signed out. */
 export const SESSION_SECONDS = 30 * 24 * 60 * 60;
 const STATE_SECONDS = 10 * 60;
+const PROBE_SECONDS = 24 * 60 * 60;
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
 const encoder = new TextEncoder();
 
@@ -93,6 +94,49 @@ export async function verifyToken(token, { jwks, audience, nonce, now = Date.now
   }
 }
 
+/** The generic roles a person may hold in a tenant, least to most (docs/tenants.md); apps map them to their own permissions. */
+export const TENANT_ROLES = ["guest", "member", "admin", "owner"];
+const TENANT_ID = /^t-[a-z0-9][a-z0-9-]{1,38}$/;
+/** The person's role in this tenant, from the user the login service reported (an app that opted in), or undefined. */
+export const tenantRole = (user, tenantId) => user?.tenants?.find((t) => t.id === tenantId)?.role;
+/** Whether the person holds at least this role in the tenant. */
+export const tenantAtLeast = (user, tenantId, role) => {
+  const have = TENANT_ROLES.indexOf(tenantRole(user, tenantId));
+  return have >= 0 && have >= TENANT_ROLES.indexOf(role);
+};
+
+/** Where the identity app issues access tokens (its OAuth issuer). */
+export const OAUTH_ISSUER = "https://icelander.net/apps/identity";
+
+/**
+ * The claims of an access token for an MCP server, or undefined: EdDSA, header typ "at+jwt" (a sign-in token is
+ * "JWT" and can never pass here, nor this one there), signed by a pinned key, issued by the identity app, for
+ * this resource, unexpired and never meant to live more than 15 minutes, with a subject and a scope.
+ */
+export async function verifyAccessToken(token, { jwks, resource, now = Date.now() / 1000, issuer = OAUTH_ISSUER } = {}) {
+  if (typeof token !== "string" || token.length > 4096) return undefined;
+  const parts = token.split(".");
+  if (parts.length !== 3) return undefined;
+  try {
+    const [h, p, s] = parts;
+    for (const part of parts) if (base64url(fromBase64url(part)) !== part) return undefined;
+    const header = JSON.parse(new TextDecoder().decode(fromBase64url(h)));
+    if (header?.alg !== "EdDSA" || header.typ !== "at+jwt" || typeof header.kid !== "string") return undefined;
+    const jwk = parseJwks(jwks).find((k) => k.kid === header.kid);
+    if (!jwk) return undefined;
+    if (!(await crypto.subtle.verify({ name: "Ed25519" }, await importPublic(jwk), fromBase64url(s), encoder.encode(`${h}.${p}`)))) return undefined;
+    const c = JSON.parse(new TextDecoder().decode(fromBase64url(p)));
+    if (!c || c.iss !== issuer || typeof resource !== "string" || c.aud !== resource) return undefined;
+    if (typeof c.exp !== "number" || typeof c.iat !== "number" || c.exp <= now || c.exp - c.iat > 900 || c.iat > now + 30) return undefined;
+    if (typeof c.sub !== "string" || !c.sub || typeof c.scope !== "string" || typeof c.gid !== "string") return undefined;
+    // The tenant the token acts in, when it names one (docs/tenants.md): a malformed one voids the token.
+    if (c.tid !== undefined && !TENANT_ID.test(String(c.tid))) return undefined;
+    return c;
+  } catch {
+    return undefined;
+  }
+}
+
 // --- Requests -------------------------------------------------------------------------------------
 
 export function readCookie(request, name) {
@@ -144,6 +188,15 @@ const json = (body, status = 200, cookies = []) => {
 
 const text = (body, status) => new Response(body + "\n", { status, headers: { "content-type": "text/plain; charset=utf-8", ...noStore } });
 
+/** One limit of an entitlements answer: 0 when there is no answer or no such limit (closed), Infinity for no limit. */
+export function limitOf(answer, key) {
+  const v = answer?.limits?.[key];
+  return v === undefined ? 0 : v === null ? Infinity : v;
+}
+
+/** Whether the owner has approved this capability (AI images, write keys) for the person. */
+export const approved = (answer, capability) => Boolean(answer?.approvals?.includes(capability));
+
 // --- The app's side -------------------------------------------------------------------------------
 
 /**
@@ -166,6 +219,7 @@ export function createAuth(options) {
   const accountsOrigin = (options.accountsOrigin ?? ISSUER).replace(/\/+$/, "");
   const cookiePath = options.cookiePath ?? "/";
   const stateCookie = `${name}_state`;
+  const probeCookie = `${name}_probe`;
   const bindingName = options.binding ?? "ACCOUNTS";
   const service = (env) => env?.[bindingName];
   if (!/^[a-z][a-z0-9-]{0,31}$/.test(app ?? "") || !/^[a-z][a-z0-9_]{0,40}$/.test(name ?? "")) throw new Error("icelander-auth: bad app or cookie name");
@@ -181,6 +235,13 @@ export function createAuth(options) {
     return (request.headers.get("authorization") ?? "").match(/^Bearer ([A-Za-z0-9_.-]{20,2000})$/)?.[1];
   }
 
+  /** The stand-in's tenants: "t-id:role[:handle]" each, like the login service reports them (docs/tenants.md). */
+  function devTenants(list) {
+    const tenants = (Array.isArray(list) ? list : []).map((t) => String(t).split(":")).filter(([id, role]) => TENANT_ID.test(id) && TENANT_ROLES.includes(role))
+      .map(([id, role, handle]) => ({ id, name: id, role, ...(handle ? { handle } : {}) }));
+    return { tenants, tenant: tenants.length === 1 ? tenants[0] : null };
+  }
+
   /** The stand-in sign-in's session: "dev." and base64url JSON of the user. Only ever read on a local host with DEV_SIGN_IN. */
   function devUser(value) {
     try {
@@ -194,6 +255,7 @@ export function createAuth(options) {
         roles: [`${app}:${options.implicitRole ?? "play"}`, ...(options.rolePrefixes ?? []).map((p) => `${p}:play`), ...roles].filter((r, i, all) => all.indexOf(r) === i),
         supporter: false, accountIds: {}, dev: true,
         via: u.via === "email" || u.via === "link" ? u.via : "provider",
+        ...devTenants(u.tenants),
       };
     } catch {
       return null;
@@ -211,6 +273,29 @@ export function createAuth(options) {
       return (await service(env).session(value, app)) ?? null;
     } catch {
       return null; // the login service is unreachable: nobody is signed in, rather than anyone
+    }
+  }
+
+  const cache = new Map();
+  /**
+   * What this person may use in this app (docs/identity-app-plan.md, 5.3): { rank, limits, approvals, v, ttl, … }, or
+   * null. Asked of the login service, then kept in this isolate for the answer's own ttl (60 seconds), so revoking
+   * something takes at most that long to reach an app that asks only once a minute; pass { fresh: true } before
+   * anything that costs money.
+   */
+  async function entitlements(request, env, { fresh = false } = {}) {
+    const value = sessionValue(request);
+    if (!value || value.startsWith("dev.") || !configured(env)) return null;
+    const hit = cache.get(value);
+    if (!fresh && hit && hit.until > Date.now()) return hit.answer;
+    try {
+      const answer = (await service(env).entitlements(value, app)) ?? null;
+      if (answer) cache.set(value, { answer, until: Date.now() + Math.max(0, Number(answer.ttl) || 0) * 1000 });
+      else cache.delete(value);
+      if (cache.size > 500) cache.delete(cache.keys().next().value);
+      return answer;
+    } catch {
+      return null; // unreachable: no limits are granted, never unlimited ones
     }
   }
 
@@ -252,7 +337,8 @@ export function createAuth(options) {
       if (!devOn(env, url)) return text("Not found.", 404);
       const email = (url.searchParams.get("email") || "tester@example.com").toLowerCase().slice(0, 254);
       const roles = (url.searchParams.get("roles") ?? "").split(",").map((r) => r.trim()).filter(Boolean);
-      const body = { id: url.searchParams.get("id") || `dev-${email}`, email, name: (url.searchParams.get("name") || "Tester").slice(0, 80), roles, via: url.searchParams.get("via") ?? "provider" };
+      const tenants = (url.searchParams.get("tenants") ?? "").split(",").map((t) => t.trim()).filter(Boolean);
+      const body = { id: url.searchParams.get("id") || `dev-${email}`, email, name: (url.searchParams.get("name") || "Tester").slice(0, 80), roles, via: url.searchParams.get("via") ?? "provider", ...(tenants.length ? { tenants } : {}) };
       const value = `dev.${base64url(encoder.encode(JSON.stringify(body)))}`;
       if (url.searchParams.get("format") === "token") return json({ token: value });
       return redirect(back(url.searchParams.get("return")), [cookie(name, value, SESSION_SECONDS, { secure, path: cookiePath })]);
@@ -287,11 +373,30 @@ export function createAuth(options) {
       const to = new URL(`${accountsOrigin}/sign-in`);
       to.search = new URLSearchParams({ app, return: back(url.searchParams.get("return")), state, callback: `${url.origin}${basePath}/callback` }).toString();
       if (url.searchParams.get("prompt") === "select") to.searchParams.set("prompt", "select");
+      // The tenant to act in (docs/tenants.md); the login service puts it in the token only if the person is a member.
+      if (TENANT_ID.test(url.searchParams.get("tenant") ?? "")) to.searchParams.set("tenant", url.searchParams.get("tenant"));
       return redirect(to.toString(), [cookie(stateCookie, state, STATE_SECONDS, { path: basePath, secure })]);
+    }
+
+    // A silent "already signed in?" check (prompt=none): at most once a day per browser, so there is no loop and no
+    // flash after the first visit. Someone signed in at the login service comes back through /callback as usual;
+    // anyone else comes back with error=login_required and simply carries on signed out.
+    if (route === "/probe" && (method === "GET" || method === "HEAD")) {
+      const to = back(url.searchParams.get("return"));
+      if (!configured(env) || readCookie(request, probeCookie)) return redirect(to);
+      const state = randomToken();
+      const target = new URL(`${accountsOrigin}/sign-in`);
+      target.search = new URLSearchParams({ app, return: to, state, callback: `${url.origin}${basePath}/callback`, prompt: "none" }).toString();
+      return redirect(target.toString(), [cookie(stateCookie, state, STATE_SECONDS, { path: basePath, secure }), cookie(probeCookie, "1", PROBE_SECONDS, { path: cookiePath, secure })]);
     }
 
     if (route === "/callback" && method === "GET") {
       const clearState = cookie(stateCookie, "", 0, { path: basePath, secure });
+      if (url.searchParams.get("error") === "login_required") {
+        const state = readCookie(request, stateCookie);
+        if (!state || state !== url.searchParams.get("state")) return redirect(home, [clearState]);
+        return redirect(back(url.searchParams.get("return")), [clearState]);
+      }
       const failed = (why) => new Response(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>Sign-in failed</title><body style="font-family:system-ui,sans-serif;max-width:34rem;margin:3rem auto;padding:0 1rem;line-height:1.5"><h1>Sign-in failed</h1><p>${why}</p><p><a href="${signInPath(home)}">Try again</a></p></body>`,
         { status: 400, headers: { "content-type": "text/html; charset=utf-8", ...noStore, "referrer-policy": "no-referrer", "set-cookie": clearState } });
       if (!configured(env)) return text("Sign-in is not available here.", 503);
@@ -313,5 +418,5 @@ export function createAuth(options) {
     return text("Not found.", 404);
   }
 
-  return { app, cookieName: name, handle, currentUser, requireRole, hasRole, signInPath, sessionValue, configured, service };
+  return { app, cookieName: name, handle, currentUser, entitlements, requireRole, hasRole, signInPath, sessionValue, configured, service };
 }

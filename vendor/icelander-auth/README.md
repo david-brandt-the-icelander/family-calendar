@@ -39,6 +39,11 @@ and its callback, `https://<host>[/<path>]/auth/callback`, registered in the log
 
 `currentUser(request, env)` asks the login service on every call, so a revoked role or a disabled user counts at once. It returns the roles of this app's prefixes only (the site's are `site:` and `games:`), and `via`, how the session was made: only `"provider"` carries more than the implicit roles.
 
+## Limits, and the silent check (2.1.0)
+
+- `auth.entitlements(request, env)` returns the person's rank and **this app's limits** (`limitOf(answer, "memesPerDay")`: 0 when closed, `Infinity` for no limit), and `approved(answer, "ai-images")` for the owner's separate approvals. It is kept in the isolate for the answer's `ttl` (60 seconds); pass `{ fresh: true }` before anything that costs money. With no answer (not signed in, the login service unreachable) nothing is granted.
+- `GET /auth/probe?return=/…` is a silent "already signed in?" check: the visitor goes to the login service with `prompt=none` and comes straight back, signed in if they were, with no page shown. It asks at most once a day per browser (the cookie `<cookie>_probe`). For apps where signing in is optional; an app that requires it just redirects to `/auth/sign-in`.
+
 ## Vendoring
 
 The repositories are separate, so each holds a copy in `vendor/icelander-auth/`. Change the library only here, bump `VERSION` in `index.js`, then copy it:

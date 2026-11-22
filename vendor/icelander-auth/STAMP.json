@@ -1,8 +1,8 @@
 {
-  "version": "2.0.1",
+  "version": "2.2.0",
   "files": {
-    "index.js": "9c7ddcb598be93cf5694ec889d82dff2021320e58ca92ac5df7d978b7489ce2f",
-    "index.d.ts": "aea62d20c03282406cca8a73e7934df58be723127d6f1aba6395bd58cce118a8",
+    "index.js": "48c37297ccc4c305ad21c6ecfcb20ea33c13b8632515a7c2ecbfb036c07546eb",
+    "index.d.ts": "fdf0f27f3fa8fea953c7a28b32d06b15496782e96477961171cfac31d2fe4ebf",
     "check.mjs": "7e557b73d816d97c5b8d1ac032a240eeb79dbf090c7f256e8bad037398c3b5ad",
     "client/play.js": "94d99f2d81abcfc77d9a92dc90c62d637c39225a06188bc27c732b31e22db0f0"
   }
