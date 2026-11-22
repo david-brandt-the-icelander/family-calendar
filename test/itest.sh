@@ -101,9 +101,11 @@ chk "signed out gets none"         401 "$(curl -s -o /dev/null -w '%{http_code}'
 chk "the binding answers"          True "$(code anna "$B/api/family-dates?from=$TODAY&to=$END" >/dev/null; jq1 'd["available"]')"
 chk "  birthdays only when asked"  "birthday" "$(code anna "$B/api/family-dates?from=$TODAY&to=$END&types=birthday" >/dev/null; jq1 '",".join(sorted(set(x["type"] for x in d["dates"])))')"
 chk "  with an age when the year is known" 40 "$(jq1 '[x for x in d["dates"] if x["personId"]=="p-ari"][0]["years"]')"
-chk "  and a link to the person"   "/apps/z-friends-and-family/people/p-ari" "$(jq1 '[x for x in d["dates"] if x["personId"]=="p-ari"][0]["url"]')"
+chk "  and a link to the person"   "https://icelander.net/apps/z-friends-and-family/person/p-ari" "$(jq1 '[x for x in d["dates"] if x["personId"]=="p-ari"][0]["url"]')"
 chk "  a circle filter"            "Friends" "$(code anna "$B/api/family-dates?from=$TODAY&to=$END&circles=Friends" >/dev/null; jq1 '",".join(sorted(set(x["circle"] for x in d["dates"])))')"
 chk "  which still lists every circle" "Family,Friends" "$(jq1 '",".join(d["circles"])')"
+chk "  'unset' is no circle"        None "$(code anna "$B/api/family-dates?from=$TODAY&to=9999-12-31&types=death" >/dev/null; jq1 'd["dates"][0]["circle"]')"
+chk "  and not a circle to pick"   "Family,Friends,Work" "$(code anna "$B/api/family-dates?from=$TODAY&to=9999-12-31" >/dev/null; jq1 '",".join(d["circles"])')"
 chk "  all time reaches the far ones" 7 "$(code anna "$B/api/family-dates?from=$TODAY&to=9999-12-31" >/dev/null; jq1 'len(d["dates"])')"
 chk "  a bad range is refused"     400 "$(code anna "$B/api/family-dates?from=$END&to=$TODAY")"
 signin faf-down Fafless

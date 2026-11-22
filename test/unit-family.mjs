@@ -6,7 +6,7 @@ import { cleanPrefs, DEFAULTS } from '../src/prefs.js';
 
 const user = { id: 'a-000000000000000000000001', email: 'tester@x.test', name: 'Tester' };
 const url = (q) => new URL(`https://icelander.net/apps/z-calendar/api/family-dates?${q}`);
-const row = (o) => ({ personId: 'p1', name: 'Made Up', kind: 'family', type: 'birthday', label: 'Birthday', month: 3, day: 4, year: 1990, circle: 'Family', nextDate: '2027-03-04', url: '/apps/z-friends-and-family/people/p1', ...o });
+const row = (o) => ({ personId: 'p1', name: 'Made Up', kind: 'family', type: 'birthday', label: 'Birthday', month: 3, day: 4, year: 1990, circle: 'Family', nextDate: '2027-03-04', url: 'https://icelander.net/apps/z-friends-and-family/person/p1', ...o });
 const call = async (env, q = 'from=2027-01-01&to=2027-12-31') => { const r = await familyDates(env, user, url(q)); return { status: r.status, body: await r.json() }; };
 
 // What z-faf is asked: the viewer as { id, email }, the range, and the types and kinds asked for.
@@ -27,7 +27,7 @@ assert.deepEqual(res.body, { available: true, dates: [], circles: [] });
 assert.equal(asked, null);
 
 // Circles: every circle seen is listed for the picker, and only the ones asked for are shown, sorted by date.
-const rows = [row({ circle: 'Work', nextDate: '2027-05-01', personId: 'w' }), row({ circle: 'Family', nextDate: '2027-02-01', personId: 'f' }), row({ circle: null, personId: 'n' })];
+const rows = [row({ circle: 'Work', nextDate: '2027-05-01', personId: 'w' }), row({ circle: 'Family', nextDate: '2027-02-01', personId: 'f' }), row({ circle: 'unset', personId: 'n' })];
 res = await call({ FAF: faf(rows) }, 'from=2027-01-01&to=2027-12-31&circles=Family,Work');
 assert.deepEqual(res.body.circles, ['Family', 'Work']);
 assert.deepEqual(res.body.dates.map((d) => d.personId), ['f', 'w']);
@@ -59,8 +59,10 @@ assert.equal(cleanDate(row({ year: null })).years, null);
 assert.equal(cleanDate(row({ year: 2030 })).years, null, 'no negative ages');
 assert.equal(cleanDate(row({ type: 'anniversary', year: 2015 })).years, 12);
 assert.equal(cleanDate(row({ kind: 'stranger' })).kind, 'contact');
-assert.equal(safeUrl('/apps/z-friends-and-family/people/p1'), '/apps/z-friends-and-family/people/p1');
-assert.equal(safeUrl('https://icelander.net/apps/z-friends-and-family/people/p1'), 'https://icelander.net/apps/z-friends-and-family/people/p1');
+assert.equal(cleanDate(row({ circle: 'unset' })).circle, null, "z-faf's 'unset' is no circle");
+assert.equal(cleanDate(row()).url, 'https://icelander.net/apps/z-friends-and-family/person/p1');
+assert.equal(safeUrl('/apps/z-friends-and-family/person/p1'), '/apps/z-friends-and-family/person/p1');
+assert.equal(safeUrl('https://icelander.net/apps/z-friends-and-family/person/p1'), 'https://icelander.net/apps/z-friends-and-family/person/p1');
 for (const bad of ['javascript:alert(1)', '//evil.test/x', 'https://evil.test/', 'http://icelander.net/x', '/\\evil.test', 42, null]) assert.equal(safeUrl(bad), null, String(bad));
 
 // Preferences: defaults (3 months, birthdays only), and only known values kept.

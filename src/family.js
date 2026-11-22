@@ -42,7 +42,8 @@ export function cleanDate(r) {
     month: Number.isInteger(r.month) ? r.month : Number(r.nextDate.slice(5, 7)),
     day: Number.isInteger(r.day) ? r.day : Number(r.nextDate.slice(8, 10)),
     year,
-    circle: r.circle == null || r.circle === '' ? null : str(r.circle, 80),
+    // z-faf says 'unset' for somebody the viewer has put in no circle: that is no circle, not one called "unset".
+    circle: r.circle == null || r.circle === '' || r.circle === 'unset' ? null : str(r.circle, 80),
     nextDate: r.nextDate,
     // An age (birthday, pet), years married (anniversary) or years since (death, event) on nextDate; null when unknown.
     years: span != null && span >= 0 ? span : null,

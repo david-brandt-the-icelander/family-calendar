@@ -31,7 +31,7 @@ A member edits their own schedules and those of dependants; an admin edits anyon
 | **Where from** | z-friends-and-family, through the service binding `FAF` (Worker `z-friends-and-family`, entrypoint `Internal`), method `dates(viewer, opts)` with `viewer = { id, email }` and `opts = { from, to, types?, kinds? }`. z-faf decides what each viewer may see; nothing about these people is stored here, and none is in this repository. |
 | **What it asks** | For the week, that week; for Upcoming, from today to the end of the range, and for *all time* `to: '9999-12-31'`. Each answer row is one date at its **next occurrence on or after `from`** (`nextDate`). |
 | **Shown as** | All-day items, a dashed tag with an icon per type, apart from schedules; an age or a years count when the year is known; each links to the person's page in z-faf. |
-| **Filters** | A checkbox per type (birthdays on by default) and a chip per circle. Both, and the Upcoming range (1 month, 3 months by default, 1 year, all time), are the person's own (`user_prefs`), kept across devices. |
+| **Filters** | A checkbox per type (birthdays on by default) and a chip per circle (z-faf's `'unset'` counts as no circle). Both, and the Upcoming range (1 month, 3 months by default, 1 year, all time), are the person's own (`user_prefs`), kept across devices. |
 | **When z-faf is missing or fails** | The binding absent, throwing, slower than 3 s or answering nonsense all give `available: false`: the calendar works as before, with a small notice. Sign-in still fails closed. |
 | **Contacts** | Imported in z-faf, at `/apps/z-friends-and-family/import`; the Upcoming screen links there. |
 

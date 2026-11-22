@@ -4,11 +4,13 @@
 //   Ari Prófason     birthday       today            born 40 years ago   circle Family   family
 //   Bára Dæmadóttir  anniversary    today + 10 days  12 years            circle Family   family
 //   Snati            pet            today + 3 days   born 4 years ago    circle Family   family
-//   Gamli Jón        death          today + 45 days  30 years ago        no circle       family
+//   Gamli Jón        death          today + 45 days  30 years ago        circle unset    family
 //   Dísa Vinkona     birthday       today + 20 days  year unknown        circle Friends  contact
 //   Kári Kollegi     event          today + 200 days one-off, this date  circle Work     contact
 //   Lóa Langtburt    event          today + 500 days one-off             circle Friends  contact
 //
+// Shaped like the real one (z-friends-and-family, branch david/z-faf-v1): full https://icelander.net links to person/<id>,
+// 'unset' for no circle, a one-off event's year given back as null.
 // A viewer whose email starts with "faf-down" makes it throw, to show the calendar carries on without it.
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
@@ -21,7 +23,7 @@ function people() {
     { personId: 'p-ari', name: 'Ari Prófason', kind: 'family', type: 'birthday', label: 'Afmæli', ...at(0, 40), circle: 'Family' },
     { personId: 'p-bara', name: 'Bára Dæmadóttir', kind: 'family', type: 'anniversary', label: 'Brúðkaupsafmæli', ...at(10, 12), circle: 'Family' },
     { personId: 'p-snati', name: 'Snati', kind: 'family', type: 'pet', label: 'Afmæli', ...at(3, 4), circle: 'Family' },
-    { personId: 'p-jon', name: 'Gamli Jón', kind: 'family', type: 'death', label: 'Dánardægur', ...at(45, 30), circle: null },
+    { personId: 'p-jon', name: 'Gamli Jón', kind: 'family', type: 'death', label: 'Dánardægur', ...at(45, 30), circle: 'unset' },
     { personId: 'p-disa', name: 'Dísa Vinkona', kind: 'contact', type: 'birthday', label: 'Afmæli', ...at(20, null), circle: 'Friends' },
     { personId: 'p-kari', name: 'Kári Kollegi', kind: 'contact', type: 'event', label: 'Útskrift', ...at(200, 0), circle: 'Work', once: true },
     { personId: 'p-loa', name: 'Lóa Langtburt', kind: 'contact', type: 'event', label: 'Heimkoma', ...at(500, 0), circle: 'Friends', once: true },
@@ -46,7 +48,7 @@ export class Internal extends WorkerEntrypoint {
       .filter((p) => (!types || types.includes(p.type)) && (!kinds || kinds.includes(p.kind)) && (!circles || circles.includes(p.circle)))
       .map((p) => ({ ...p, nextDate: next(p, from) }))
       .filter((p) => p.nextDate && p.nextDate <= to)
-      .map(({ once, ...p }) => ({ ...p, year: once ? null : p.year, url: `/apps/z-friends-and-family/people/${p.personId}` }));
+      .map(({ once, ...p }) => ({ ...p, year: once ? null : p.year, url: `https://icelander.net/apps/z-friends-and-family/person/${p.personId}` }));
   }
 }
 

@@ -145,7 +145,7 @@ test('family dates: on the week as all-day items, apart from schedules, linking 
   const ari = today.locator('a.fam', { hasText: 'Ari Prófason' });
   await expect(ari).toBeVisible();
   await expect(ari).toContainText('turns 40');
-  await expect(ari).toHaveAttribute('href', '/apps/z-friends-and-family/people/p-ari');
+  await expect(ari).toHaveAttribute('href', 'https://icelander.net/apps/z-friends-and-family/person/p-ari');
   await expect(today.locator('.allday .fam-birthday')).toHaveCount(1);
   await expect(page.locator('.day .occ')).toHaveCount(0);   // a date is not a schedule
   // Birthdays only, by default.
@@ -185,6 +185,7 @@ test('upcoming: the ranges, the type and circle filters, and the range remembere
   await expect.poll(() => names(page)).toEqual(['Dísa Vinkona', 'Lóa Langtburt']);
   await page.locator('.chip[data-circle=Work]').click();
   await expect.poll(() => names(page)).toEqual(['Dísa Vinkona', 'Kári Kollegi', 'Lóa Langtburt']);
+  await expect(page.locator('.chip[data-circle]')).toHaveCount(3);   // Family, Friends, Work: never 'unset'
   await page.getByRole('button', { name: 'All circles' }).click();
   await expect.poll(() => names(page)).toHaveLength(7);
 
