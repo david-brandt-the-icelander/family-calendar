@@ -179,8 +179,8 @@
     {
       "id": "move-to-apps-calendar",
       "title": "The calendar's home is /apps/calendar",
-      "summary": "One Worker serves both /apps/calendar and /calendar; the old path redirects (308) only when the owner turns it on.",
-      "status": "accepted",
+      "summary": "One Worker serves both /apps/calendar and /calendar; the old path redirects (308) only when the owner turns it on. Superseded by move-to-z-calendar before the switch was ever turned on.",
+      "status": "superseded",
       "decidedBy": "The owner",
       "decidedOn": "2026-11-21",
       "context": "Every app of the owner has a home under icelander.net/apps/<id>. The calendar's callback and cookie path were registered at /calendar.",
@@ -199,6 +199,59 @@
         {
           "path": "test/unit-base-path.mjs",
           "symbol": "OLD_PATH_REDIRECTS"
+        }
+      ]
+    },
+    {
+      "id": "move-to-z-calendar",
+      "title": "The calendar's home is /apps/z-calendar",
+      "summary": "The Worker answers at /apps/z-calendar only; /calendar* and /apps/calendar* answer a 301 to the same path there, for GET and HEAD.",
+      "status": "accepted",
+      "decidedBy": "The owner",
+      "decidedOn": "2026-11-22",
+      "context": "The family's private apps (the calendar and z-friends-and-family) sit together under /apps/z-*. The calendar was served at /apps/calendar and /calendar, each with its own sign-in.",
+      "decision": "One sign-in, callback https://icelander.net/apps/z-calendar/auth/callback, cookie calendar_session on Path /apps/z-calendar, app id calendar. The old paths 301 to the matching new path with the query kept (old sign-in callbacks included); other methods get 405 moved. Same Worker name and D1, so households are untouched. OLD_PATH_REDIRECTS is gone.",
+      "rationale": "A single address and a single sign-in; links and bookmarks keep working through the redirect, and nothing is written to a path that has moved.",
+      "evidenceStatus": "source-verified",
+      "sources": [
+        {
+          "path": "src/index.js",
+          "symbol": "route"
+        },
+        {
+          "path": "wrangler.jsonc",
+          "symbol": "routes"
+        },
+        {
+          "path": "test/unit-base-path.mjs"
+        }
+      ]
+    },
+    {
+      "id": "family-dates-from-faf",
+      "title": "Family dates come from z-friends-and-family",
+      "summary": "Birthdays, anniversaries, death dates, events and pets are asked of z-faf per viewer through the FAF binding, shown as all-day items, and never stored here; if z-faf fails the calendar carries on.",
+      "status": "accepted",
+      "decidedBy": "The owner",
+      "decidedOn": "2026-11-22",
+      "context": "The family's people and their dates live in z-friends-and-family, which decides who may see what. The calendar is shared by a household, but these dates are per viewer.",
+      "decision": "GET /api/family-dates asks FAF.dates({ id, email }, { from, to, types?, kinds? }) and passes on cleaned rows (known types, a date, links on icelander.net only); circles are filtered here so the picker lists every circle seen. Fail soft: missing, throwing, slow or malformed gives available: false. Each person's filters and Upcoming range are theirs (user_prefs, keyed by user id, not household). Contact import lives in z-faf; the calendar links to it.",
+      "rationale": "One owner of family data; the household rule (everything visible to all) does not apply to dates another app filters per viewer, so they are never cached where a household could see them.",
+      "evidenceStatus": "source-verified",
+      "sources": [
+        {
+          "path": "src/family.js",
+          "symbol": "familyDates"
+        },
+        {
+          "path": "src/prefs.js",
+          "symbol": "cleanPrefs"
+        },
+        {
+          "path": "migrations/0002_user_prefs.sql"
+        },
+        {
+          "path": "test/unit-family.mjs"
         }
       ]
     }

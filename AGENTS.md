@@ -1,6 +1,6 @@
 # Agent instructions
 
-The family calendar is one Cloudflare Worker (`src/`) with a D1 database (`migrations/`) and a static client (`public/`), served at **icelander.net/apps/calendar** (and still at icelander.net/calendar until the owner turns on `OLD_PATH_REDIRECTS`). Households, the people in them and their weekly schedules live here. Who a person is, and how they sign in, does not: that is icelander.net's login service (Google and the others), reached through the vendored `vendor/icelander-auth` and a service binding. Nothing in this repository talks to Google.
+The family calendar is one Cloudflare Worker (`src/`) with a D1 database (`migrations/`) and a static client (`public/`), served at **icelander.net/apps/z-calendar** (its old addresses, icelander.net/calendar and icelander.net/apps/calendar, answer a 301 there). Households, the people in them and their weekly schedules live here. Family dates (birthdays, anniversaries, death dates, events, pets) do not: they are z-friends-and-family's, asked for through the `FAF` service binding (`src/family.js`) and never stored here. Who a person is, and how they sign in, does not: that is icelander.net's login service (Google and the others), reached through the vendored `vendor/icelander-auth` and a service binding. Nothing in this repository talks to Google.
 
 Run the tests with `scripts/ci-test.sh` (unit tests, the vendored-library check, a fresh local D1 and `wrangler dev` on :8801 with the library's stand-in sign-in, then the API in `test/itest.sh` and the client in a browser in `test/ui/`, Playwright; run `npx playwright install chromium` once). A change to `public/` needs a browser test that would fail without it: the API tests never draw a page.
 
@@ -11,6 +11,8 @@ Run the tests with `scripts/ci-test.sh` (unit tests, the vendored-library check,
 - **`vendor/icelander-auth/` is never edited here.** Change it in `icelander.net/packages/icelander-auth` and copy it with `sync.sh`; `test/vendored.mjs` fails if the copy differs from its stamp.
 - **Everything a household can see hangs off `household_id`.** A query against people, schedules, rules or exceptions with no household above it in the join is a leak. `test/itest.sh` has a second household for no reason but to be invisible.
 - **Light mode only, and no hidden information.** Everyone in a household sees everything in it. There is no "private" or "busy only" schedule, by the owner's decision.
+- **No real family data, ever.** This repository is public. Names and dates in tests, fixtures, docs and commits are invented; z-faf is mocked by `test/faf-mock/`, which `scripts/ci-test.sh` runs in the same `wrangler dev`.
+- **Family dates fail soft, sign-in fails closed.** If `FAF` is missing or fails, the calendar works and says so; nothing about sign-in ever falls back.
 - **`wrangler dev` needs `--local-upstream localhost:<port>`**: the route names icelander.net, and without it `request.url` does too, which makes the library refuse its stand-in sign-in.
 
 ## Design

@@ -11,7 +11,7 @@
 
 ## How they reach it
 
-A browser, usually a phone, at icelander.net/calendar.
+A browser, usually a phone, at icelander.net/apps/z-calendar.
 
 ## Not to be confused with
 

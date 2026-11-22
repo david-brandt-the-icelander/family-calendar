@@ -3,7 +3,7 @@
   "kind": "component",
   "title": "Family calendar component diagram",
   "folder": ".",
-  "description": "The calendar Worker, the login service it signs people in through, and its database.",
+  "description": "The calendar Worker, the login service it signs people in through, z-friends-and-family it asks for family dates, and its database.",
   "sources": [
     {
       "path": "src/index.js",
@@ -20,6 +20,10 @@
     {
       "path": "src/expand.js",
       "symbol": "expand"
+    },
+    {
+      "path": "src/family.js",
+      "symbol": "familyDates"
     }
   ],
   "components": [
@@ -60,6 +64,18 @@
       "responsibility": "Week view with person filter, schedule editor, household screen; Icelandic and English, light only."
     },
     {
+      "id": "family",
+      "name": "Family dates (family.js)",
+      "folder": "src",
+      "responsibility": "Asks z-friends-and-family for the viewer's dates, cleans them, filters circles, and fails soft."
+    },
+    {
+      "id": "prefs",
+      "name": "Preferences (prefs.js)",
+      "folder": "src",
+      "responsibility": "Each person's Upcoming range and family-date filters, keyed by user id."
+    },
+    {
       "id": "accounts",
       "name": "icelander.net login service",
       "external": true,
@@ -70,6 +86,12 @@
       "name": "D1 database",
       "external": true,
       "responsibility": "households, members, invites, people, schedules, schedule_rules, schedule_exceptions."
+    },
+    {
+      "id": "faf",
+      "name": "z-friends-and-family",
+      "external": true,
+      "responsibility": "The family's people, relationships and dates; decides what each viewer may see; contact import."
     }
   ],
   "relationships": [
@@ -119,7 +141,31 @@
       "from": "client",
       "to": "worker",
       "kind": "depends-on",
-      "description": "fetch to /calendar/api."
+      "description": "fetch to /apps/z-calendar/api."
+    },
+    {
+      "from": "worker",
+      "to": "family",
+      "kind": "depends-on",
+      "description": "GET /api/family-dates."
+    },
+    {
+      "from": "worker",
+      "to": "prefs",
+      "kind": "depends-on",
+      "description": "GET and PUT /api/prefs."
+    },
+    {
+      "from": "family",
+      "to": "faf",
+      "kind": "depends-on",
+      "description": "dates(viewer, opts) through the FAF service binding (Internal entrypoint)."
+    },
+    {
+      "from": "prefs",
+      "to": "db",
+      "kind": "depends-on",
+      "description": "user_prefs, by user id."
     }
   ]
 }

@@ -58,7 +58,7 @@ export async function renameHousehold(env, householdId, body) {
   return json({ ok: true });
 }
 
-export async function createInvite(env, user, householdId, origin, base = '/calendar') {
+export async function createInvite(env, user, householdId, origin, base = '/apps/z-calendar') {
   const token = randomToken(24);
   await env.DB.batch([
     env.DB.prepare(`DELETE FROM invites WHERE expires_at <= datetime('now')`),

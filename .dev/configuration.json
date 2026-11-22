@@ -28,7 +28,7 @@
     {
       "id": "dev-sign-in",
       "title": "Stand-in sign-in for tests",
-      "summary": "DEV_SIGN_IN=\"true\" turns on /calendar/auth/dev, only on a localhost address.",
+      "summary": "DEV_SIGN_IN=\"true\" turns on /apps/z-calendar/auth/dev, only on a localhost address.",
       "key": "DEV_SIGN_IN",
       "type": "string (.dev.vars, never a deployed var)",
       "sensitive": false,
@@ -43,23 +43,28 @@
       ]
     },
     {
-      "id": "old-path-redirects",
-      "title": "OLD_PATH_REDIRECTS",
-      "summary": "\"true\" makes /calendar* answer a 308 to /apps/calendar* (except the old sign-in callback); \"false\" serves both paths.",
-      "key": "OLD_PATH_REDIRECTS",
-      "type": "Worker var",
+      "id": "faf-binding",
+      "title": "FAF service binding",
+      "summary": "The service binding to the Worker z-friends-and-family, entrypoint Internal, which answers dates(viewer, opts) with the family dates that viewer may see.",
+      "key": "FAF",
+      "type": "service binding (services in wrangler.jsonc)",
       "sensitive": false,
       "scope": "family-calendar Worker",
-      "takesEffect": "at-deploy",
+      "takesEffect": "at deploy",
+      "details": "Optional at run time: without it, or when it throws, times out (3 s) or answers nonsense, /api/family-dates says available: false and the client shows a notice. Cloudflare refuses a deploy naming a Worker that does not exist, so z-friends-and-family deploys first. In the tests, test/faf-mock/ runs in the same wrangler dev under that name.",
       "evidenceStatus": "source-verified",
       "sources": [
         {
           "path": "wrangler.jsonc",
-          "symbol": "vars"
+          "symbol": "services"
         },
         {
-          "path": "src/index.js",
-          "symbol": "route"
+          "path": "src/family.js",
+          "symbol": "familyDates"
+        },
+        {
+          "path": "test/faf-mock/index.js",
+          "symbol": "Internal"
         }
       ]
     }
