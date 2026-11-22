@@ -25,3 +25,25 @@ button.danger { color:var(--bad); } button.dim { color:var(--dim); border-color:
 label { display:flex; flex-direction:column; gap:2px; color:var(--dim); font-size:.8rem; }
 .msg { color:var(--bad); min-height:1.4em; } .dim { color:var(--dim); }
 @media (max-width:720px) { .week { grid-template-columns:1fr; } .day { min-height:0; } }
+/* Family dates (from z-friends-and-family): all-day, drawn as a dashed tag with an icon, never like a schedule's bar. */
+.allday { display:flex; flex-direction:column; gap:4px; margin-bottom:6px; }
+.fam { display:flex; gap:6px; align-items:flex-start; border:1px dashed #b4552d; background:#fff4ec; color:var(--text); border-radius:6px; padding:3px 6px; font-size:.82rem; text-decoration:none; min-width:0; }
+.fam .ico { flex:none; }
+.fam .txt { min-width:0; overflow-wrap:anywhere; }
+.fam b { font-weight:600; margin-right:4px; } .fam .sub { color:var(--dim); display:block; }
+.fam-anniversary { border-color:#a23a78; background:#fcf0f7; } .fam-death { border-color:#55606e; background:#f1f3f5; }
+.fam-event { border-color:#2d6fb4; background:#eef5fc; } .fam-pet { border-color:#3a8a4f; background:#eff8f1; }
+a.fam:hover { border-style:solid; }
+.famfilter { margin:0 0 12px; }
+.famfilter .types { gap:4px 14px; }
+label.check { flex-direction:row; align-items:center; gap:6px; color:var(--text); font-size:.9rem; }
+.famfilter .chip { font-size:.85rem; }
+.notice { background:#fff8e1; border:1px solid #f0d58a; border-radius:8px; padding:6px 10px; font-size:.85rem; margin:6px 0; }
+.ranges { flex-wrap:wrap; }
+.seg { border-radius:999px; padding:6px 12px; } .seg.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+.import { margin-left:auto; color:var(--accent); }
+.upcoming .month { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px 12px; margin-bottom:12px; }
+.upcoming h3 { margin:2px 0 8px; font-size:.95rem; }
+.upcoming .fam, .upcoming .occ { margin-bottom:6px; font-size:.9rem; }
+.when { font-weight:600; margin-right:6px; white-space:nowrap; }
+.upcoming .occ .when { display:inline; } .upcoming .occ b { display:inline; margin-right:6px; }

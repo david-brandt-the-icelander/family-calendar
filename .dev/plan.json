@@ -42,7 +42,7 @@
         },
         {
           "id": "invite",
-          "title": "Invite screen: the public invite preview and the signed-out page that shows it when reached through /calendar/join/<token>",
+          "title": "Invite screen: the public invite preview and the signed-out page that shows it when reached through /apps/z-calendar/join/<token>",
           "status": "todo"
         },
         {

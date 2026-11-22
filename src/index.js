@@ -1,9 +1,10 @@
-// Family calendar — a shared calendar for a household, at icelander.net/apps/calendar (and, until the owner turns on
-// OLD_PATH_REDIRECTS, still at icelander.net/calendar: both paths are served by this one Worker).
+// Family calendar — a shared calendar for a household, at icelander.net/apps/z-calendar. Its old addresses,
+// icelander.net/calendar and icelander.net/apps/calendar, answer a 301 to the same path here.
 //
 // Sign-in is icelander.net's one login service (Google and the rest), through the vendored
 // icelander-auth library and a service binding; nothing here talks to Google. This Worker keeps
-// households, their people and their weekly schedules in its own D1.
+// households, their people and their weekly schedules in its own D1. Family dates (birthdays and the like) are
+// z-friends-and-family's, asked for through the FAF binding, and shown only if it answers.
 
 import { createAuth } from '../vendor/icelander-auth/index.js';
 import { json, fail, readJson } from './lib.js';
@@ -12,19 +13,20 @@ import {
   createInvite, listInvites, revokeInvite, acceptInvite, removeMember, INVITE_RE,
 } from './households.js';
 import * as S from './schedules.js';
+import { familyDates } from './family.js';
+import { getPrefs, putPrefs } from './prefs.js';
 
-/** Where the calendar lived (and still answers) and where it lives now (the owner's decision of 2026-11-21). */
+/** The calendar's home (the owner's decision of 2026-11-22), and the two addresses it had before. */
 // Not exported: a Worker module may export only handlers and classes, and a string stops it starting.
-const OLD = '/calendar';
-const NEW = '/apps/calendar';
+const BASE = '/apps/z-calendar';
+const OLD = ['/calendar', '/apps/calendar'];
 const UUID_RE = /^[0-9a-fA-F-]{8,36}$/;
 
-// One sign-in per base path, both for the app "calendar": each has its own callback (both registered in icelander.net's
-// APPS) and its own cookie Path, so nobody is signed in to one by the other and the old one keeps working untouched.
-const authFor = (base) => createAuth({ app: 'calendar', cookie: 'calendar_session', basePath: `${base}/auth`, cookiePath: base, home: `${base}/` });
-const authOld = authFor(OLD);
-const authNew = authFor(NEW);
-export const auth = authOld; // as before: the old path's sign-in
+// One sign-in, for the app "calendar" of icelander.net's APPS: callback https://icelander.net/apps/z-calendar/auth/callback,
+// cookie Path /apps/z-calendar. Sessions made at the old addresses had their own cookie paths and are simply not sent here.
+export const auth = createAuth({ app: 'calendar', cookie: 'calendar_session', basePath: `${BASE}/auth`, cookiePath: BASE, home: `${BASE}/` });
+
+const under = (path, base) => path === base || path.startsWith(`${base}/`);
 
 export default {
   async fetch(request, env) {
@@ -37,13 +39,16 @@ export default {
 };
 
 async function route(request, env, url) {
-  const BASE = url.pathname === NEW || url.pathname.startsWith(`${NEW}/`) ? NEW : OLD;
-  const auth = BASE === NEW ? authNew : authOld;
-
-  // Once the owner has turned it on, the old path answers a 308 to the same path under /apps/calendar, for every method
-  // and body, except the old sign-in callback, which keeps answering until the old registration is retired.
-  if (BASE === OLD && env.OLD_PATH_REDIRECTS === 'true' && url.pathname !== `${OLD}/auth/callback` && (url.pathname === OLD || url.pathname.startsWith(`${OLD}/`))) {
-    return Response.redirect(`${url.origin}${NEW}${url.pathname.slice(OLD.length)}${url.search}`, 308);
+  // The old addresses send a page, a link or a bookmark to the same path under /apps/z-calendar, query kept. Only GET and
+  // HEAD: anything that writes is refused rather than repeated somewhere else.
+  const old = OLD.find((o) => under(url.pathname, o));
+  if (old) {
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
+      const r = fail('moved', 405, `the calendar moved to ${BASE}`);
+      r.headers.set('allow', 'GET, HEAD');
+      return r;
+    }
+    return Response.redirect(`${url.origin}${BASE}${url.pathname.slice(old.length) || '/'}${url.search}`, 301);
   }
 
   // /auth/sign-in, /auth/callback, /auth/sign-out, /auth/me — and /auth/dev on localhost with DEV_SIGN_IN.
@@ -54,7 +59,7 @@ async function route(request, env, url) {
   if (url.pathname === BASE) return Response.redirect(`${url.origin}${BASE}/${url.search}`, 301);
 
   const path = url.pathname.replace(/\/+$/, '') || '/';
-  if (path === '/health' || path === `${OLD}/health` || path === `${NEW}/health`) return json({ ok: true });
+  if (path === '/health' || path === `${BASE}/health`) return json({ ok: true });
   if (path !== BASE && !path.startsWith(`${BASE}/`)) return new Response('Not found', { status: 404 });
   const rest = path.slice(BASE.length) || '/';
 
@@ -86,6 +91,13 @@ async function route(request, env, url) {
     return json({ user: { id: user.id, name: user.name, picture: user.picture, email: user.email }, households });
   }
 
+  // The user's own, not the household's: z-faf decides what each viewer may see, and preferences are per person.
+  if (seg[0] === 'family-dates' && !seg[1] && method === 'GET') return familyDates(env, user, url);
+  if (seg[0] === 'prefs' && !seg[1]) {
+    if (method === 'GET') return getPrefs(env, user);
+    if (method === 'PUT') return putPrefs(env, user, await readJson(request));
+  }
+
   // Everything else is inside one household: ?household= or, failing that, the user's first.
   const asked = url.searchParams.get('household');
   if (asked && !UUID_RE.test(asked)) return fail('bad_household', 400, 'bad household id');
@@ -102,7 +114,7 @@ async function route(request, env, url) {
     if (seg[1] === 'invites') {
       if (!admin) return fail('forbidden', 403, 'admins only');
       if (method === 'GET') return listInvites(env, householdId);
-      if (method === 'POST') return createInvite(env, user, householdId, url.origin, env.OLD_PATH_REDIRECTS === 'true' ? NEW : BASE);
+      if (method === 'POST') return createInvite(env, user, householdId, url.origin, BASE);
       if (method === 'DELETE' && seg[2]) return revokeInvite(env, householdId, seg[2]);
     }
     if (seg[1] === 'members' && seg[2] && method === 'DELETE') return removeMember(env, user, role, householdId, seg[2]);
@@ -137,7 +149,7 @@ async function route(request, env, url) {
   return fail('not_found', 404, 'no such route');
 }
 
-/** The static client lives at the Worker's root; the site serves it under /apps/calendar and /calendar. */
+/** The static client lives at the Worker's root; the site serves it under /apps/z-calendar. */
 function assets(request, env, url, rest) {
   const to = new URL(request.url);
   to.pathname = rest;

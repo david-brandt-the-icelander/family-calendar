@@ -3,7 +3,7 @@
   "kind": "deployment",
   "title": "Family calendar deployment diagram",
   "folder": ".",
-  "description": "One Worker on the icelander.net zone, its D1, and the login service it binds to.",
+  "description": "One Worker on the icelander.net zone, its D1, and the login service and z-friends-and-family it binds to.",
   "sources": [
     {
       "path": "wrangler.jsonc",
@@ -29,19 +29,25 @@
       "id": "worker",
       "name": "family-calendar Worker",
       "kind": "process",
-      "description": "Serves icelander.net/calendar*, ahead of the site's own Worker."
+      "description": "Serves icelander.net/apps/z-calendar*, and answers icelander.net/apps/calendar* and icelander.net/calendar* with a 301 there, ahead of the site's own Worker."
     },
     {
       "id": "d1",
       "name": "family-calendar D1",
       "kind": "database",
-      "description": "Households, people and schedules."
+      "description": "Households, people, schedules, and each person's preferences."
     },
     {
       "id": "accounts",
       "name": "accounts Worker (icelander.net)",
       "kind": "process",
       "description": "The login service; reached by a service binding, never from the internet."
+    },
+    {
+      "id": "faf",
+      "name": "z-friends-and-family Worker",
+      "kind": "process",
+      "description": "The family's people and dates; reached by a service binding for dates, and by the browser for its own pages."
     }
   ],
   "artifacts": [
@@ -57,7 +63,7 @@
       "name": "migrations/",
       "source": "migrations/0001_init.sql",
       "deployedTo": "d1",
-      "description": "Applied with wrangler d1 migrations apply."
+      "description": "0001_init.sql and 0002_user_prefs.sql, applied with wrangler d1 migrations apply."
     }
   ],
   "relationships": [
@@ -65,13 +71,13 @@
       "from": "browser",
       "to": "worker",
       "kind": "connects-to",
-      "description": "HTTPS to icelander.net/calendar."
+      "description": "HTTPS to icelander.net/apps/z-calendar (the old addresses redirect there)."
     },
     {
       "from": "admin-browser",
       "to": "worker",
       "kind": "connects-to",
-      "description": "HTTPS to icelander.net/calendar."
+      "description": "HTTPS to icelander.net/apps/z-calendar (the old addresses redirect there)."
     },
     {
       "from": "worker",
@@ -84,6 +90,18 @@
       "to": "accounts",
       "kind": "connects-to",
       "description": "The ACCOUNTS service binding (Internal entrypoint)."
+    },
+    {
+      "from": "worker",
+      "to": "faf",
+      "kind": "connects-to",
+      "description": "The FAF service binding (Internal entrypoint), dates(viewer, opts)."
+    },
+    {
+      "from": "browser",
+      "to": "faf",
+      "kind": "connects-to",
+      "description": "A family date's link, and contact import, open z-friends-and-family's pages."
     }
   ]
 }

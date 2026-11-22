@@ -1,7 +1,8 @@
-// The family calendar, at icelander.net/calendar. Deploy from the repository root with
+// The family calendar, at icelander.net/apps/z-calendar. Deploy from the repository root with
 //   npx wrangler deploy
-// The calendar's home is icelander.net/apps/calendar; /calendar still works too. No secrets belong in this file. Sign-in is the login service's (icelander.net/accounts): this app is
-// registered there as "calendar" (its APPS), and checks tokens against ACCOUNTS_JWKS.
+// No secrets belong in this file. Sign-in is the login service's (icelander.net/accounts): this app is registered there
+// as "calendar" (its APPS, callback https://icelander.net/apps/z-calendar/auth/callback), and checks tokens against ACCOUNTS_JWKS.
+// The Worker keeps its name and its database: moving it changed only where it answers.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "family-calendar",
@@ -11,19 +12,22 @@
   "workers_dev": false,
   "preview_urls": false,
   // A path on icelander.net itself, so the sign-in providers know one site.
-  // The new home first, the old one beside it: both are served until OLD_PATH_REDIRECTS is turned on (below).
+  // The home first; the two old addresses only answer a 301 to the same path under it (GET and HEAD).
   "routes": [
+    { "pattern": "icelander.net/apps/z-calendar*", "zone_name": "icelander.net" },
     { "pattern": "icelander.net/apps/calendar*", "zone_name": "icelander.net" },
     { "pattern": "icelander.net/calendar*", "zone_name": "icelander.net" }
   ],
   "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": true },
   // Households, people, schedules (migrations/, applied with `npx wrangler d1 migrations apply family-calendar --remote`).
   "d1_databases": [{ "binding": "DB", "database_name": "family-calendar", "database_id": "88e5374e-7551-473c-9bd2-5578a603b98c", "migrations_dir": "migrations" }],
-  "services": [{ "binding": "ACCOUNTS", "service": "accounts", "entrypoint": "Internal" }],
+  // ACCOUNTS: the login service. FAF: z-friends-and-family, for family dates (dates(viewer, opts), src/family.js); the
+  // calendar works without it and says so. The tests stand a made-up one in its place (test/faf-mock/).
+  "services": [
+    { "binding": "ACCOUNTS", "service": "accounts", "entrypoint": "Internal" },
+    { "binding": "FAF", "service": "z-friends-and-family", "entrypoint": "Internal" }
+  ],
   "vars": {
-    // "true" makes /calendar* answer a 308 to /apps/calendar* (except /calendar/auth/callback). Turn it on only after
-    // this Worker, with both routes, and icelander.net's APPS (both callbacks) are deployed. Off = both paths work.
-    "OLD_PATH_REDIRECTS": "false",
     // The login service's public keys (the same line every app carries; docs/accounts.md in icelander.net).
     "ACCOUNTS_JWKS": "{\"keys\":[{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"kid\":\"k2026a\",\"x\":\"WIEomi0LTalJvQndhD7abl8ty3YcliQ0vEz4XjLXayc\"}]}"
   },
