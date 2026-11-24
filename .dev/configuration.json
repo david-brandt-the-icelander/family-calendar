@@ -67,6 +67,46 @@
           "symbol": "Internal"
         }
       ]
+    },
+    {
+      "id": "cloudflare-api-token",
+      "title": "zizd deploy key CLOUDFLARE_API_TOKEN",
+      "summary": "The Cloudflare API token the zizd deploy step deploys with: it applies the D1 migrations and deploys the Worker.",
+      "key": "CLOUDFLARE_API_TOKEN",
+      "type": "string (a deploy_keys config key of the zizd pipeline, in the orchestrator; never in this repository)",
+      "sensitive": true,
+      "scope": "the zizd pipeline's deploy step",
+      "takesEffect": "at deploy",
+      "details": "Named by the deploy step of david-brandt-the-icelander/family-calendar:default (.zazzle/zizd/README.md); the step refuses to run without it. No build-phase step gets it.",
+      "evidenceStatus": "source-verified",
+      "sources": [
+        {
+          "path": ".zazzle/zizd/deploy/run.sh"
+        },
+        {
+          "path": ".zazzle/zizd/README.md"
+        }
+      ]
+    },
+    {
+      "id": "cloudflare-account-id",
+      "title": "zizd deploy key CLOUDFLARE_ACCOUNT_ID",
+      "summary": "The Cloudflare account the zizd deploy step deploys to.",
+      "key": "CLOUDFLARE_ACCOUNT_ID",
+      "type": "string (a deploy_keys config key of the zizd pipeline, in the orchestrator; never in this repository)",
+      "sensitive": false,
+      "scope": "the zizd pipeline's deploy step",
+      "takesEffect": "at deploy",
+      "details": "Named by the deploy step of david-brandt-the-icelander/family-calendar:default (.zazzle/zizd/README.md); the step refuses to run without it. No build-phase step gets it.",
+      "evidenceStatus": "source-verified",
+      "sources": [
+        {
+          "path": ".zazzle/zizd/deploy/run.sh"
+        },
+        {
+          "path": ".zazzle/zizd/README.md"
+        }
+      ]
     }
   ]
 }
