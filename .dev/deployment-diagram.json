@@ -3,7 +3,7 @@
   "kind": "deployment",
   "title": "Family calendar deployment diagram",
   "folder": ".",
-  "description": "One Worker on the icelander.net zone, its D1, and the login service and z-friends-and-family it binds to.",
+  "description": "One Worker on the icelander.net zone, its D1, and the login service and friends-and-family it binds to.",
   "sources": [
     {
       "path": "wrangler.jsonc",
@@ -45,7 +45,7 @@
     },
     {
       "id": "faf",
-      "name": "z-friends-and-family Worker",
+      "name": "friends-and-family Worker",
       "kind": "process",
       "description": "The family's people and dates; reached by a service binding for dates, and by the browser for its own pages."
     }
@@ -101,7 +101,7 @@
       "from": "browser",
       "to": "faf",
       "kind": "connects-to",
-      "description": "A family date's link, and contact import, open z-friends-and-family's pages."
+      "description": "A family date's link, and contact import, open friends-and-family's pages."
     }
   ]
 }

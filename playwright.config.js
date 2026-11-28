@@ -7,7 +7,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: [['list']],
-  // UTC, like the z-faf stand-in's idea of today, so a birthday set for today is on today's square.
+  // UTC, like the friends-and-family stand-in's idea of today, so a birthday set for today is on today's square.
   use: { baseURL: 'http://localhost:8801', trace: 'retain-on-failure', timezoneId: 'UTC' },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], timezoneId: 'UTC' } }],
 });

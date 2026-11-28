@@ -30,8 +30,8 @@ function h(tag, attrs = {}, ...kids) {
 
 // The page is served under /apps/z-calendar; its old addresses redirect here.
 const BASE = '/apps/z-calendar';
-// z-friends-and-family: where the family dates come from, and where contacts are imported.
-const FAF_IMPORT = '/apps/z-friends-and-family/import';
+// friends-and-family: where the family dates come from, and where contacts are imported.
+const FAF_IMPORT = '/apps/friends-and-family/import';
 
 async function api(method, path, body) {
   const res = await fetch(`${BASE}/api${path}`, {
@@ -77,8 +77,8 @@ function signedOut() {
 
 
 // ------------------------------------------------------------ family dates
-// Birthdays, anniversaries and the rest come from z-friends-and-family, already cut to what this person may see. They are
-// all-day items, drawn apart from schedules, and each links to the person's page there. If z-faf does not answer, the
+// Birthdays, anniversaries and the rest come from friends-and-family, already cut to what this person may see. They are
+// all-day items, drawn apart from schedules, and each links to the person's page there. If friends-and-family does not answer, the
 // calendar works as before with a line saying so.
 const FAMILY_TYPES = ['birthday', 'anniversary', 'death', 'event', 'pet'];
 const ICONS = { birthday: '🎂', anniversary: '💍', death: '✝', event: '★', pet: '🐾' };

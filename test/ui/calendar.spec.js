@@ -139,13 +139,13 @@ async function tick(page, type) {
 }
 const names = (page) => page.locator('.upcoming .fam b').allTextContents();
 
-test('family dates: on the week as all-day items, apart from schedules, linking to z-faf', async ({ page }) => {
+test('family dates: on the week as all-day items, apart from schedules, linking to friends-and-family', async ({ page }) => {
   await signIn(page, 'fam', 'Fam');
   const today = page.locator('.day.today');
   const ari = today.locator('a.fam', { hasText: 'Ari Prófason' });
   await expect(ari).toBeVisible();
   await expect(ari).toContainText('turns 40');
-  await expect(ari).toHaveAttribute('href', 'https://icelander.net/apps/z-friends-and-family/person/p-ari');
+  await expect(ari).toHaveAttribute('href', 'https://icelander.net/apps/friends-and-family/person/p-ari');
   await expect(today.locator('.allday .fam-birthday')).toHaveCount(1);
   await expect(page.locator('.day .occ')).toHaveCount(0);   // a date is not a schedule
   // Birthdays only, by default.
@@ -159,7 +159,7 @@ test('upcoming: the ranges, the type and circle filters, and the range remembere
   await signIn(page, 'up', 'Up');
   await page.getByRole('link', { name: 'Upcoming' }).click();
   await expect(page.getByRole('button', { name: '3 months' })).toHaveAttribute('aria-pressed', 'true');   // the default
-  await expect(page.getByRole('link', { name: 'Import contacts' })).toHaveAttribute('href', '/apps/z-friends-and-family/import');
+  await expect(page.getByRole('link', { name: 'Import contacts' })).toHaveAttribute('href', '/apps/friends-and-family/import');
 
   // Birthdays only: Ari (today) and Dísa (in 20 days, year unknown, so no age).
   await expect.poll(() => names(page)).toEqual(['Ari Prófason', 'Dísa Vinkona']);
@@ -229,7 +229,7 @@ test('upcoming: schedules too, when asked, for a month or three', async ({ page 
   await drawsProperly(page);
 });
 
-test('z-faf down: the calendar still works, with a small notice', async ({ page }) => {
+test('friends-and-family down: the calendar still works, with a small notice', async ({ page }) => {
   await signIn(page, 'faf-down', 'Fafless');   // the stand-in throws for this viewer
   await expect(page.locator('.day')).toHaveCount(7);
   await expect(page.locator('.notice')).toHaveText("Family dates can't be shown right now. The calendar still works.");
