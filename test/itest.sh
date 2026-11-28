@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Drives the Worker on :8801 with the library's stand-in sign-in (/apps/z-calendar/auth/dev, only on localhost
-# with DEV_SIGN_IN), so no login service is needed, and the made-up z-friends-and-family in test/faf-mock/ behind
+# with DEV_SIGN_IN), so no login service is needed, and the made-up friends-and-family in test/faf-mock/ behind
 # the FAF binding. Two households: Anna (admin) and Bjorn join one; Zed is alone in another and must never see theirs.
 H=http://localhost:8801
 B=$H/apps/z-calendar
@@ -94,14 +94,14 @@ chk "outsider cannot name my household" 403 "$(code zed "$B/api/schedules?househ
 chk "outsider cannot edit mine"    404 "$(code zed -X PATCH -d '{"title":"x"}' $B/api/schedules/$S)"
 chk "outsider cannot delete mine"  404 "$(code zed -X DELETE $B/api/schedules/$S)"
 
-echo "--- family dates (z-faf stand-in)"
+echo "--- family dates (friends-and-family stand-in)"
 TODAY=$(python3 -c 'import datetime; print(datetime.datetime.now(datetime.timezone.utc).date())')
 END=$(python3 -c 'import datetime; print(datetime.datetime.now(datetime.timezone.utc).date()+datetime.timedelta(days=30))')
 chk "signed out gets none"         401 "$(curl -s -o /dev/null -w '%{http_code}' "$B/api/family-dates?from=$TODAY&to=$END")"
 chk "the binding answers"          True "$(code anna "$B/api/family-dates?from=$TODAY&to=$END" >/dev/null; jq1 'd["available"]')"
 chk "  birthdays only when asked"  "birthday" "$(code anna "$B/api/family-dates?from=$TODAY&to=$END&types=birthday" >/dev/null; jq1 '",".join(sorted(set(x["type"] for x in d["dates"])))')"
 chk "  with an age when the year is known" 40 "$(jq1 '[x for x in d["dates"] if x["personId"]=="p-ari"][0]["years"]')"
-chk "  and a link to the person"   "https://icelander.net/apps/z-friends-and-family/person/p-ari" "$(jq1 '[x for x in d["dates"] if x["personId"]=="p-ari"][0]["url"]')"
+chk "  and a link to the person"   "https://icelander.net/apps/friends-and-family/person/p-ari" "$(jq1 '[x for x in d["dates"] if x["personId"]=="p-ari"][0]["url"]')"
 chk "  a circle filter"            "Friends" "$(code anna "$B/api/family-dates?from=$TODAY&to=$END&circles=Friends" >/dev/null; jq1 '",".join(sorted(set(x["circle"] for x in d["dates"])))')"
 chk "  which still lists every circle" "Family,Friends" "$(jq1 '",".join(d["circles"])')"
 chk "  'unset' is no circle"        None "$(code anna "$B/api/family-dates?from=$TODAY&to=9999-12-31&types=death" >/dev/null; jq1 'd["dates"][0]["circle"]')"
@@ -109,7 +109,7 @@ chk "  and not a circle to pick"   "Family,Friends,Work" "$(code anna "$B/api/fa
 chk "  all time reaches the far ones" 7 "$(code anna "$B/api/family-dates?from=$TODAY&to=9999-12-31" >/dev/null; jq1 'len(d["dates"])')"
 chk "  a bad range is refused"     400 "$(code anna "$B/api/family-dates?from=$END&to=$TODAY")"
 signin faf-down Fafless
-chk "z-faf failing is not an error" 200 "$(code faf-down "$B/api/family-dates?from=$TODAY&to=$END")"
+chk "friends-and-family failing is not an error" 200 "$(code faf-down "$B/api/family-dates?from=$TODAY&to=$END")"
 chk "  it says it is unavailable"  False "$(jq1 'd["available"]')"
 chk "  and the rest still works"   200 "$(code faf-down "$B/api/agenda?from=$TODAY&to=$END")"
 

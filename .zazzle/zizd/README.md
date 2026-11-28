@@ -9,7 +9,7 @@ the copy below is what goes there.
 | Step | Phase | Image | What it does | Leaves in `/zazzle/output` |
 |---|---|---|---|---|
 | `check` | build | `python:3.13.9-slim`, jsonschema 4.26.0 | validates the `.dev` diagrams and knowledge files (the CI `diagrams` job) | nothing |
-| `test` | build | `mcr.microsoft.com/playwright:v1.65.0-noble` | `npm ci`, then `scripts/ci-test.sh`: unit tests, the vendored-library check, the API against `wrangler dev` with the z-faf stand-in, the client in Chromium (the CI `test` job) | nothing |
+| `test` | build | `mcr.microsoft.com/playwright:v1.65.0-noble` | `npm ci`, then `scripts/ci-test.sh`: unit tests, the vendored-library check, the API against `wrangler dev` with the friends-and-family stand-in, the client in Chromium (the CI `test` job) | nothing |
 | `build` | build | `node:22.21.1-bookworm-slim`, wrangler 4.162.0 (`package-lock.json`) | `wrangler deploy --dry-run --outdir`: the bundled Worker | `dist/index.js`, `public/`, `migrations/`, `wrangler.jsonc`, `BUILD` (the commit) |
 | `deploy` | deploy (`deploys: true`) | `node:22.21.1-bookworm-slim`, wrangler 4.162.0 | from `/zazzle/input/artifacts/build/` only: `wrangler d1 migrations apply family-calendar --remote`, then `wrangler deploy dist/index.js --no-bundle`. Never rebuilds. | nothing |
 
@@ -22,7 +22,7 @@ The deploy step:
 - with `DEPLOY_DRY_RUN=1` (by hand only; no pipeline names it) needs no credentials, lists the migrations instead of
   applying them, and runs `wrangler deploy --dry-run` on the artifacts.
 
-What the deploy does not do, as today: deploy z-friends-and-family first (its `FAF` binding must name a Worker that
+What the deploy does not do, as today: deploy friends-and-family first (its `FAF` binding must name a Worker that
 exists), or change the login service's `APPS`. See `README.md`, "Deploy order".
 
 ## The pipeline file

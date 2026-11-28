@@ -4,7 +4,7 @@
 // Sign-in is icelander.net's one login service (Google and the rest), through the vendored
 // icelander-auth library and a service binding; nothing here talks to Google. This Worker keeps
 // households, their people and their weekly schedules in its own D1. Family dates (birthdays and the like) are
-// z-friends-and-family's, asked for through the FAF binding, and shown only if it answers.
+// friends-and-family's, asked for through the FAF binding, and shown only if it answers.
 
 import { createAuth } from '../vendor/icelander-auth/index.js';
 import { json, fail, readJson } from './lib.js';
@@ -91,7 +91,7 @@ async function route(request, env, url) {
     return json({ user: { id: user.id, name: user.name, picture: user.picture, email: user.email }, households });
   }
 
-  // The user's own, not the household's: z-faf decides what each viewer may see, and preferences are per person.
+  // The user's own, not the household's: friends-and-family decides what each viewer may see, and preferences are per person.
   if (seg[0] === 'family-dates' && !seg[1] && method === 'GET') return familyDates(env, user, url);
   if (seg[0] === 'prefs' && !seg[1]) {
     if (method === 'GET') return getPrefs(env, user);

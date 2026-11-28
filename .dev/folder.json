@@ -7,13 +7,13 @@
     {
       "id": "folder",
       "title": "Family calendar",
-      "summary": "One Worker, one D1 and a static client: a household's shared weekly schedules, and the family dates z-friends-and-family lets each person see, at icelander.net/apps/z-calendar, signed in through icelander.net's login service.",
+      "summary": "One Worker, one D1 and a static client: a household's shared weekly schedules, and the family dates friends-and-family lets each person see, at icelander.net/apps/z-calendar, signed in through icelander.net's login service.",
       "purpose": "Lets each person in a household, and children or others without a sign-in, keep weekly schedules (work, school, lessons) with alternating weeks and per-day exceptions, and lets the household see one person's week or everyone's.",
       "boundaries": [
         "Identity and sign-in (Google and the rest) belong to the login service in the icelander.net repository; this repository vendors its client library and never edits it.",
         "The calendar knows a person only by the login service's id, plus the name and picture it last saw.",
         "Nothing is hidden inside a household: no private or busy-only schedules.",
-        "Family dates (birthdays, anniversaries, death dates, events, pets) belong to z-friends-and-family, reached through the FAF service binding; this Worker asks for them per viewer, shows them, and stores none of them. This repository is public and holds no real family data."
+        "Family dates (birthdays, anniversaries, death dates, events, pets) belong to friends-and-family, reached through the FAF service binding; this Worker asks for them per viewer, shows them, and stores none of them. This repository is public and holds no real family data."
       ],
       "evidenceStatus": "source-verified",
       "sources": [

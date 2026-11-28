@@ -1,4 +1,4 @@
-// Stands in for z-friends-and-family's Internal entrypoint in the tests. Made-up people only (this repository is public).
+// Stands in for friends-and-family's Internal entrypoint in the tests. Made-up people only (this repository is public).
 // Dates are set relative to today, so the browser tests find them in this week, the next month and so on:
 //
 //   Ari Prófason     birthday       today            born 40 years ago   circle Family   family
@@ -9,7 +9,7 @@
 //   Kári Kollegi     event          today + 200 days one-off, this date  circle Work     contact
 //   Lóa Langtburt    event          today + 500 days one-off             circle Friends  contact
 //
-// Shaped like the real one (z-friends-and-family, branch david/z-faf-v1): full https://icelander.net links to person/<id>,
+// Shaped like the real one (friends-and-family, branch david/friends-and-family-v1): full https://icelander.net links to person/<id>,
 // 'unset' for no circle, a one-off event's year given back as null.
 // A viewer whose email starts with "faf-down" makes it throw, to show the calendar carries on without it.
 import { WorkerEntrypoint } from 'cloudflare:workers';
@@ -41,15 +41,15 @@ function next(p, from) {
 
 export class Internal extends WorkerEntrypoint {
   async dates(viewer, opts) {
-    if (String(viewer?.email ?? '').startsWith('faf-down')) throw new Error('z-faf is down (on purpose, in the tests)');
+    if (String(viewer?.email ?? '').startsWith('faf-down')) throw new Error('friends-and-family is down (on purpose, in the tests)');
     if (!viewer?.id) throw new Error('no viewer');
     const { from, to, types, kinds, circles } = opts ?? {};
     return people()
       .filter((p) => (!types || types.includes(p.type)) && (!kinds || kinds.includes(p.kind)) && (!circles || circles.includes(p.circle)))
       .map((p) => ({ ...p, nextDate: next(p, from) }))
       .filter((p) => p.nextDate && p.nextDate <= to)
-      .map(({ once, ...p }) => ({ ...p, year: once ? null : p.year, url: `https://icelander.net/apps/z-friends-and-family/person/${p.personId}` }));
+      .map(({ once, ...p }) => ({ ...p, year: once ? null : p.year, url: `https://icelander.net/apps/friends-and-family/person/${p.personId}` }));
   }
 }
 
-export default { fetch: () => new Response('z-friends-and-family stand-in', { status: 404 }) };
+export default { fetch: () => new Response('friends-and-family stand-in', { status: 404 }) };

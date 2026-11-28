@@ -1,4 +1,4 @@
-// Family dates — birthdays, anniversaries, death dates, events and pets — from z-friends-and-family (z-faf), which owns
+// Family dates — birthdays, anniversaries, death dates, events and pets — from friends-and-family (friends-and-family), which owns
 // the people and decides what each viewer may see. This Worker only asks, through the FAF service binding (entrypoint
 // Internal), and passes the answer on, cleaned. Nothing about these people is stored here.
 //
@@ -28,7 +28,7 @@ export function safeUrl(u) {
   try { const p = new URL(u); return p.protocol === 'https:' && p.hostname === 'icelander.net' ? p.href : null; } catch { return null; }
 }
 
-/** One row from z-faf as the client may see it, or null if it is not a usable date. */
+/** One row from friends-and-family as the client may see it, or null if it is not a usable date. */
 export function cleanDate(r) {
   if (!r || typeof r !== 'object' || !TYPES.includes(r.type) || typeof r.nextDate !== 'string' || !DATE_RE.test(r.nextDate)) return null;
   const year = Number.isInteger(r.year) ? r.year : null;
@@ -42,7 +42,7 @@ export function cleanDate(r) {
     month: Number.isInteger(r.month) ? r.month : Number(r.nextDate.slice(5, 7)),
     day: Number.isInteger(r.day) ? r.day : Number(r.nextDate.slice(8, 10)),
     year,
-    // z-faf says 'unset' for somebody the viewer has put in no circle: that is no circle, not one called "unset".
+    // friends-and-family says 'unset' for somebody the viewer has put in no circle: that is no circle, not one called "unset".
     circle: r.circle == null || r.circle === '' || r.circle === 'unset' ? null : str(r.circle, 80),
     nextDate: r.nextDate,
     // An age (birthday, pet), years married (anniversary) or years since (death, event) on nextDate; null when unknown.

@@ -25,7 +25,7 @@ button.danger { color:var(--bad); } button.dim { color:var(--dim); border-color:
 label { display:flex; flex-direction:column; gap:2px; color:var(--dim); font-size:.8rem; }
 .msg { color:var(--bad); min-height:1.4em; } .dim { color:var(--dim); }
 @media (max-width:720px) { .week { grid-template-columns:1fr; } .day { min-height:0; } }
-/* Family dates (from z-friends-and-family): all-day, drawn as a dashed tag with an icon, never like a schedule's bar. */
+/* Family dates (from friends-and-family): all-day, drawn as a dashed tag with an icon, never like a schedule's bar. */
 .allday { display:flex; flex-direction:column; gap:4px; margin-bottom:6px; }
 .fam { display:flex; gap:6px; align-items:flex-start; border:1px dashed #b4552d; background:#fff4ec; color:var(--text); border-radius:6px; padding:3px 6px; font-size:.82rem; text-decoration:none; min-width:0; }
 .fam .ico { flex:none; }

@@ -1,8 +1,8 @@
-// A made-up z-friends-and-family for the tests: scripts/ci-test.sh runs it beside the calendar in one `wrangler dev`, so the
+// A made-up friends-and-family for the tests: scripts/ci-test.sh runs it beside the calendar in one `wrangler dev`, so the
 // calendar's FAF binding reaches it. Never deployed. Every name and date in it is invented.
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
-  "name": "z-friends-and-family",
+  "name": "friends-and-family",
   "main": "index.js",
   "compatibility_date": "2026-09-22",
   "workers_dev": false

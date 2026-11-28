@@ -21,11 +21,11 @@
   "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": true },
   // Households, people, schedules (migrations/, applied with `npx wrangler d1 migrations apply family-calendar --remote`).
   "d1_databases": [{ "binding": "DB", "database_name": "family-calendar", "database_id": "88e5374e-7551-473c-9bd2-5578a603b98c", "migrations_dir": "migrations" }],
-  // ACCOUNTS: the login service. FAF: z-friends-and-family, for family dates (dates(viewer, opts), src/family.js); the
+  // ACCOUNTS: the login service. FAF: friends-and-family, for family dates (dates(viewer, opts), src/family.js); the
   // calendar works without it and says so. The tests stand a made-up one in its place (test/faf-mock/).
   "services": [
     { "binding": "ACCOUNTS", "service": "accounts", "entrypoint": "Internal" },
-    { "binding": "FAF", "service": "z-friends-and-family", "entrypoint": "Internal" }
+    { "binding": "FAF", "service": "friends-and-family", "entrypoint": "Internal" }
   ],
   "vars": {
     // The login service's public keys (the same line every app carries; docs/accounts.md in icelander.net).

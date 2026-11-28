@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Everything the tests need, for CI and for a developer: unit tests, the vendored-library check, a fresh local
-# D1, `wrangler dev` with the stand-in sign-in on :8801 and a made-up z-friends-and-family behind the FAF binding
+# D1, `wrangler dev` with the stand-in sign-in on :8801 and a made-up friends-and-family behind the FAF binding
 # (test/faf-mock/), then the API (test/itest.sh) and the client in a browser (test/ui/, Playwright;
 # `npx playwright install chromium` once).
 set -euo pipefail
@@ -16,7 +16,7 @@ mkdir -p .wrangler
 npx wrangler d1 migrations apply family-calendar --local >/dev/null
 printf 'DEV_SIGN_IN="true"\n' > .dev.vars   # a --var would arrive as a boolean; the library wants the string
 # The route names icelander.net, so without --local-upstream request.url says so and the stand-in sign-in refuses.
-# The second config is the z-faf stand-in: one dev session, so the calendar's FAF service binding resolves to it.
+# The second config is the friends-and-family stand-in: one dev session, so the calendar's FAF service binding resolves to it.
 npx wrangler dev -c wrangler.jsonc -c test/faf-mock/wrangler.jsonc --local --port 8801 --local-upstream localhost:8801 > .wrangler/dev.log 2>&1 &
 dev=$!
 trap 'kill $dev 2>/dev/null || true' EXIT

@@ -3,7 +3,7 @@
   "kind": "component",
   "title": "Family calendar component diagram",
   "folder": ".",
-  "description": "The calendar Worker, the login service it signs people in through, z-friends-and-family it asks for family dates, and its database.",
+  "description": "The calendar Worker, the login service it signs people in through, friends-and-family it asks for family dates, and its database.",
   "sources": [
     {
       "path": "src/index.js",
@@ -67,7 +67,7 @@
       "id": "family",
       "name": "Family dates (family.js)",
       "folder": "src",
-      "responsibility": "Asks z-friends-and-family for the viewer's dates, cleans them, filters circles, and fails soft."
+      "responsibility": "Asks friends-and-family for the viewer's dates, cleans them, filters circles, and fails soft."
     },
     {
       "id": "prefs",
@@ -89,7 +89,7 @@
     },
     {
       "id": "faf",
-      "name": "z-friends-and-family",
+      "name": "friends-and-family",
       "external": true,
       "responsibility": "The family's people, relationships and dates; decides what each viewer may see; contact import."
     }

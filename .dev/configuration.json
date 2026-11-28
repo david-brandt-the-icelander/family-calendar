@@ -45,13 +45,13 @@
     {
       "id": "faf-binding",
       "title": "FAF service binding",
-      "summary": "The service binding to the Worker z-friends-and-family, entrypoint Internal, which answers dates(viewer, opts) with the family dates that viewer may see.",
+      "summary": "The service binding to the Worker friends-and-family, entrypoint Internal, which answers dates(viewer, opts) with the family dates that viewer may see.",
       "key": "FAF",
       "type": "service binding (services in wrangler.jsonc)",
       "sensitive": false,
       "scope": "family-calendar Worker",
       "takesEffect": "at deploy",
-      "details": "Optional at run time: without it, or when it throws, times out (3 s) or answers nonsense, /api/family-dates says available: false and the client shows a notice. Cloudflare refuses a deploy naming a Worker that does not exist, so z-friends-and-family deploys first. In the tests, test/faf-mock/ runs in the same wrangler dev under that name.",
+      "details": "Optional at run time: without it, or when it throws, times out (3 s) or answers nonsense, /api/family-dates says available: false and the client shows a notice. Cloudflare refuses a deploy naming a Worker that does not exist, so friends-and-family deploys first. In the tests, test/faf-mock/ runs in the same wrangler dev under that name.",
       "evidenceStatus": "source-verified",
       "sources": [
         {
